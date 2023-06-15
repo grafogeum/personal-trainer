@@ -1,2 +1,8 @@
+import { ReactNode } from 'react';
 
-export { }
+declare const MainMenuPanel: ({ title, children, }: {
+    title?: string | undefined;
+    children?: ReactNode;
+}) => JSX.Element;
+
+export { MainMenuPanel };
