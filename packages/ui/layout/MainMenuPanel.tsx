@@ -1,6 +1,20 @@
 import { ReactNode } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
+import styled from "@emotion/styled";
+
+const Container = styled.div`
+	background-color: #0e0d0d;
+	height: 100%;
+	display: flex;
+	flex-grow: 1;
+	flex-direction: column;
+	min-height: 100vh;
+`;
+
+const Title = styled.h2`
+	color: #fff;
+`;
 
 export const MainMenuPanel = ({
 	title,
@@ -8,27 +22,11 @@ export const MainMenuPanel = ({
 }: {
 	title?: string;
 	children?: ReactNode;
-}) => {
-	return (
-		<ChakraProvider>
-			<div
-				style={{
-					backgroundColor: "#0e0d0d",
-					height: "100%",
-					display: "flex",
-					flexGrow: 1,
-					flexDirection: "column",
-					minHeight: "100vh",
-				}}
-			>
-				<h2>Title: {title}</h2>
-
-				{children}
-
-				<Text fontSize="20px" color="tomato">
-					People who recommend me:
-				</Text>
-			</div>
-		</ChakraProvider>
-	);
-};
+}) => (
+	<ChakraProvider>
+		<Container>
+			<Title>Title: {title}</Title>
+			{children}
+		</Container>
+	</ChakraProvider>
+);
