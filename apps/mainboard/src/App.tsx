@@ -1,5 +1,5 @@
 import { MainMenuPanel } from "ui";
-import { MainBoard } from "./layouts/MainBoard";
+import { MainBoard } from "panels";
 
 export default function Page() {
 	return (
