@@ -44,7 +44,10 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // index.tsx
 var panels_exports = {};
 __export(panels_exports, {
-  MainBoard: () => MainBoard
+  Column: () => Column,
+  Goal: () => Goal,
+  MainBoard: () => MainBoard,
+  TaskListDnD: () => TaskListDnD
 });
 module.exports = __toCommonJS(panels_exports);
 
@@ -52,11 +55,10 @@ module.exports = __toCommonJS(panels_exports);
 var import_react_dnd3 = require("react-dnd");
 var import_react_dnd_html5_backend = require("react-dnd-html5-backend");
 
-// components/DragDrop.tsx
+// components/Column.tsx
 var import_react = require("react");
-var import_styled2 = __toESM(require("@emotion/styled"));
 
-// components/Picture.tsx
+// components/Goal.tsx
 var import_styled = __toESM(require("@emotion/styled"));
 var import_react_dnd = require("react-dnd");
 var import_jsx_runtime = require("react/jsx-runtime");
@@ -64,12 +66,11 @@ var ImageStyled = import_styled.default.div`
 	width: 100px;
 	height: 100px;
 	position: relative;
-	display: block;
+	display: flex;
 	border: ${({ isDragging }) => isDragging ? "1px solid #fc44c8" : "1px solid black"};
 	opacity: ${({ canDrag }) => canDrag ? 1 : 0.5};
 	background: ${({ url }) => `url(${url}) no-repeat center center `};
 	background-size: cover;
-	z-index: 0;
 
 	&::before {
 		content: "";
@@ -80,7 +81,6 @@ var ImageStyled = import_styled.default.div`
 		height: 100px;
 		background-color: #c4e653;
 		transition: opacity 0.2s ease-in-out;
-		z-index: 1;
 		opacity: 0;
 	}
 
@@ -88,7 +88,7 @@ var ImageStyled = import_styled.default.div`
 		opacity: 0.5;
 	}
 `;
-var Picture = ({
+var Goal = ({
   url,
   name,
   id
@@ -112,8 +112,8 @@ var Picture = ({
   );
 };
 
-// ../data/PictureList.ts
-var PictureList = [
+// ../data/GoalList.ts
+var GoalList = [
   {
     id: 1,
     name: "Picture 1",
@@ -131,49 +131,79 @@ var PictureList = [
   }
 ];
 
-// components/DragDrop.tsx
+// components/Column.tsx
+var import_styled2 = __toESM(require("@emotion/styled"));
 var import_react_dnd2 = require("react-dnd");
 var import_jsx_runtime2 = require("react/jsx-runtime");
-var Board = import_styled2.default.div`
-	width: 200px;
-	height: 350px;
+var ColumnStyled = import_styled2.default.div`
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	align-items: start;
 	border: 1px solid #000;
 `;
-var Container = import_styled2.default.div`
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
-`;
-var DragDrop = () => {
+var Column = () => {
   const [board, setBoard] = (0, import_react.useState)([]);
   const [{ isOver }, drop] = (0, import_react_dnd2.useDrop)(() => ({
     accept: "IMAGE" /* IMAGE */,
-    drop: (item) => setBoard((board2) => [...board2, PictureList[item.id - 1]]),
+    drop: (item) => setBoard((board2) => [...board2, GoalList[item.id - 1]]),
     collect: (monitor) => ({
       isOver: !!monitor.isOver()
     })
   }));
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(Container, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "pictures", children: PictureList.map(({ id, name, url }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Picture, __spreadValues({}, { name, url, id })) }, id)) }),
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Board, { ref: drop, children: board.map(
-      ({ id, name, url }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Picture, __spreadValues({}, { url, name, id })) }, id)
-    ) })
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(ColumnStyled, { ref: drop, children: board.map(
+    ({ id, name, url }) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Goal, __spreadValues({}, { url, name, id })) }, id)
+  ) });
+};
+
+// components/TaskListDnD.tsx
+var import_styled3 = __toESM(require("@emotion/styled"));
+var import_react2 = require("@chakra-ui/react");
+var import_jsx_runtime3 = require("react/jsx-runtime");
+var Container = import_styled3.default.div`
+	display: flex;
+	flex-direction: row;
+	flex-direction: column;
+	justify-content: center;
+	padding: 0;
+	margin: 0;
+`;
+var TaskListDnD = () => {
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_react2.Box, { children: GoalList.map(({ id, name, url }) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("div", { children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(Goal, __spreadValues({}, { name, url, id })) }, id)) });
 };
 
 // layouts/MainBoard.tsx
-var import_jsx_runtime3 = require("react/jsx-runtime");
+var import_react3 = require("@chakra-ui/react");
+var import_jsx_runtime4 = require("react/jsx-runtime");
 var MainBoard = ({
   title,
   children
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_react_dnd3.DndProvider, { backend: import_react_dnd_html5_backend.HTML5Backend, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("h2", { children: title }),
-    children,
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(DragDrop, {})
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_react_dnd3.DndProvider, { backend: import_react_dnd_html5_backend.HTML5Backend, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(import_react3.Box, { display: "flex", width: "100%", m: 2, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(TaskListDnD, {}),
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
+      import_react3.Box,
+      {
+        display: "flex",
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "space-between",
+        children: [
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Column, {}),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Column, {}),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Column, {}),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Column, {})
+        ]
+      }
+    )
+  ] }) });
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  MainBoard
+  Column,
+  Goal,
+  MainBoard,
+  TaskListDnD
 });

@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { DragDrop } from "../components/DragDrop";
+import { TaskListDnD, Column } from "../components";
+import { Box } from "@chakra-ui/react";
 
 export const MainBoard = ({
 	title,
@@ -12,9 +13,20 @@ export const MainBoard = ({
 }) => {
 	return (
 		<DndProvider backend={HTML5Backend}>
-			<h2>{title}</h2>
-			{children}
-			<DragDrop />
+			<Box display="flex" width="100%" m={2}>
+				<TaskListDnD />
+				<Box
+					display="flex"
+					width="100%"
+					alignItems="center"
+					justifyContent="space-between"
+				>
+					<Column />
+					<Column />
+					<Column />
+					<Column />
+				</Box>
+			</Box>
 		</DndProvider>
 	);
 };

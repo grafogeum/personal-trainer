@@ -19,11 +19,10 @@ var __spreadValues = (a, b) => {
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-// components/DragDrop.tsx
+// components/Column.tsx
 import { useState } from "react";
-import styled2 from "@emotion/styled";
 
-// components/Picture.tsx
+// components/Goal.tsx
 import styled from "@emotion/styled";
 import { useDrag } from "react-dnd";
 import { jsx } from "react/jsx-runtime";
@@ -31,12 +30,11 @@ var ImageStyled = styled.div`
 	width: 100px;
 	height: 100px;
 	position: relative;
-	display: block;
+	display: flex;
 	border: ${({ isDragging }) => isDragging ? "1px solid #fc44c8" : "1px solid black"};
 	opacity: ${({ canDrag }) => canDrag ? 1 : 0.5};
 	background: ${({ url }) => `url(${url}) no-repeat center center `};
 	background-size: cover;
-	z-index: 0;
 
 	&::before {
 		content: "";
@@ -47,7 +45,6 @@ var ImageStyled = styled.div`
 		height: 100px;
 		background-color: #c4e653;
 		transition: opacity 0.2s ease-in-out;
-		z-index: 1;
 		opacity: 0;
 	}
 
@@ -55,7 +52,7 @@ var ImageStyled = styled.div`
 		opacity: 0.5;
 	}
 `;
-var Picture = ({
+var Goal = ({
   url,
   name,
   id
@@ -79,8 +76,8 @@ var Picture = ({
   );
 };
 
-// ../data/PictureList.ts
-var PictureList = [
+// ../data/GoalList.ts
+var GoalList = [
   {
     id: 1,
     name: "Picture 1",
@@ -98,48 +95,78 @@ var PictureList = [
   }
 ];
 
-// components/DragDrop.tsx
+// components/Column.tsx
+import styled2 from "@emotion/styled";
 import { useDrop } from "react-dnd";
-import { jsx as jsx2, jsxs } from "react/jsx-runtime";
-var Board = styled2.div`
-	width: 200px;
-	height: 350px;
+import { jsx as jsx2 } from "react/jsx-runtime";
+var ColumnStyled = styled2.div`
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	align-items: start;
 	border: 1px solid #000;
 `;
-var Container = styled2.div`
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
-`;
-var DragDrop = () => {
+var Column = () => {
   const [board, setBoard] = useState([]);
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "IMAGE" /* IMAGE */,
-    drop: (item) => setBoard((board2) => [...board2, PictureList[item.id - 1]]),
+    drop: (item) => setBoard((board2) => [...board2, GoalList[item.id - 1]]),
     collect: (monitor) => ({
       isOver: !!monitor.isOver()
     })
   }));
-  return /* @__PURE__ */ jsxs(Container, { children: [
-    /* @__PURE__ */ jsx2("div", { className: "pictures", children: PictureList.map(({ id, name, url }) => /* @__PURE__ */ jsx2("div", { children: /* @__PURE__ */ jsx2(Picture, __spreadValues({}, { name, url, id })) }, id)) }),
-    /* @__PURE__ */ jsx2(Board, { ref: drop, children: board.map(
-      ({ id, name, url }) => /* @__PURE__ */ jsx2("div", { children: /* @__PURE__ */ jsx2(Picture, __spreadValues({}, { url, name, id })) }, id)
-    ) })
-  ] });
+  return /* @__PURE__ */ jsx2(ColumnStyled, { ref: drop, children: board.map(
+    ({ id, name, url }) => /* @__PURE__ */ jsx2("div", { children: /* @__PURE__ */ jsx2(Goal, __spreadValues({}, { url, name, id })) }, id)
+  ) });
+};
+
+// components/TaskListDnD.tsx
+import styled3 from "@emotion/styled";
+import { Box } from "@chakra-ui/react";
+import { jsx as jsx3 } from "react/jsx-runtime";
+var Container = styled3.div`
+	display: flex;
+	flex-direction: row;
+	flex-direction: column;
+	justify-content: center;
+	padding: 0;
+	margin: 0;
+`;
+var TaskListDnD = () => {
+  return /* @__PURE__ */ jsx3(Box, { children: GoalList.map(({ id, name, url }) => /* @__PURE__ */ jsx3("div", { children: /* @__PURE__ */ jsx3(Goal, __spreadValues({}, { name, url, id })) }, id)) });
 };
 
 // layouts/MainBoard.tsx
-import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+import { Box as Box2 } from "@chakra-ui/react";
+import { jsx as jsx4, jsxs } from "react/jsx-runtime";
 var MainBoard = ({
   title,
   children
 }) => {
-  return /* @__PURE__ */ jsxs2(DndProvider, { backend: HTML5Backend, children: [
-    /* @__PURE__ */ jsx3("h2", { children: title }),
-    children,
-    /* @__PURE__ */ jsx3(DragDrop, {})
-  ] });
+  return /* @__PURE__ */ jsx4(DndProvider, { backend: HTML5Backend, children: /* @__PURE__ */ jsxs(Box2, { display: "flex", width: "100%", m: 2, children: [
+    /* @__PURE__ */ jsx4(TaskListDnD, {}),
+    /* @__PURE__ */ jsxs(
+      Box2,
+      {
+        display: "flex",
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "space-between",
+        children: [
+          /* @__PURE__ */ jsx4(Column, {}),
+          /* @__PURE__ */ jsx4(Column, {}),
+          /* @__PURE__ */ jsx4(Column, {}),
+          /* @__PURE__ */ jsx4(Column, {})
+        ]
+      }
+    )
+  ] }) });
 };
 export {
-  MainBoard
+  Column,
+  Goal,
+  MainBoard,
+  TaskListDnD
 };

@@ -6,4 +6,14 @@ declare const MainBoard: ({ title, children, }: {
     children?: ReactNode;
 }) => react_jsx_runtime.JSX.Element;
 
-export { MainBoard };
+declare const Column: () => react_jsx_runtime.JSX.Element;
+
+type GoalType = { url: string; name: string; id: number };
+
+declare const Goal: ({ url, name, id, }: GoalType & {
+    isDragging?: boolean;
+}) => react_jsx_runtime.JSX.Element;
+
+declare const TaskListDnD: () => react_jsx_runtime.JSX.Element;
+
+export { Column, Goal, MainBoard, TaskListDnD };

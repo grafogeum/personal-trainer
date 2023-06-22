@@ -4,7 +4,7 @@ import { MainBoard } from "panels";
 const App = () => {
 	return (
 		<>
-			<MainBoard></MainBoard>
+			<MainBoard />
 		</>
 	);
 };

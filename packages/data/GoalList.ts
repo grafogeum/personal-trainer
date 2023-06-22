@@ -1,4 +1,4 @@
-export const PictureList = [
+export const GoalList = [
 	{
 		id: 1,
 		name: "Picture 1",

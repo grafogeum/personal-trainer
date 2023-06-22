@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { useDrag } from "react-dnd";
 import { DragType } from "../../enums/dragTypes";
-import { PictureType } from "types";
+import { GoalType } from "types";
 
 interface ImageStyledProps {
 	isDragging: boolean | (() => void);
@@ -13,13 +13,12 @@ const ImageStyled = styled.div<ImageStyledProps>`
 	width: 100px;
 	height: 100px;
 	position: relative;
-	display: block;
+	display: flex;
 	border: ${({ isDragging }) =>
 		isDragging ? "1px solid #fc44c8" : "1px solid black"};
 	opacity: ${({ canDrag }) => (canDrag ? 1 : 0.5)};
 	background: ${({ url }) => `url(${url}) no-repeat center center `};
 	background-size: cover;
-	z-index: 0;
 
 	&::before {
 		content: "";
@@ -30,7 +29,6 @@ const ImageStyled = styled.div<ImageStyledProps>`
 		height: 100px;
 		background-color: #c4e653;
 		transition: opacity 0.2s ease-in-out;
-		z-index: 1;
 		opacity: 0;
 	}
 
@@ -39,11 +37,11 @@ const ImageStyled = styled.div<ImageStyledProps>`
 	}
 `;
 
-export const Picture = ({
+export const Goal = ({
 	url,
 	name,
 	id,
-}: PictureType & {
+}: GoalType & {
 	isDragging?: boolean;
 }) => {
 	const [{ isDragging, canDrag }, drag] = useDrag(() => ({
