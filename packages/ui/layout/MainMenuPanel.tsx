@@ -2,6 +2,9 @@ import { ReactNode } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
 import styled from "@emotion/styled";
+import { MainMenu } from "../components/Panels/MainMenu";
+import { store } from "../store/store";
+import { Provider } from "react-redux";
 
 const Container = styled.div`
 	background-color: #0e0d0d;
@@ -23,10 +26,13 @@ export const MainMenuPanel = ({
 	title?: string;
 	children?: ReactNode;
 }) => (
-	<ChakraProvider>
-		<Container>
-			<Title>Title: {title}</Title>
-			{children}
-		</Container>
-	</ChakraProvider>
+	<Provider store={store}>
+		<ChakraProvider>
+			<Container>
+				<Title>Title: {title}</Title>
+				<MainMenu />
+				{children}
+			</Container>
+		</ChakraProvider>
+	</Provider>
 );
