@@ -1,9 +1,8 @@
-import { Button } from "@chakra-ui/react";
-import { EmailIcon } from "@chakra-ui/icons";
-import { ButtonProps } from "@chakra-ui/react";
 import { JSXElementConstructor, ReactElement } from "react";
+import { Button, ButtonProps } from "@chakra-ui/react";
 import { Action } from "redux";
 import { UserStatusStatus } from "../../const/const";
+import { User } from "../Icons/User";
 
 const commonStyles = {
 	bg: "purple.200",
@@ -17,27 +16,26 @@ const commonStyles = {
 
 type Button = {
 	text: string;
-	onClick?: (() => void)[];
+	onClick: (() => void)[];
 	as?: React.ElementType<ButtonProps>;
-	rightIcon?: ReactElement<
-		React.ReactNode,
-		string | JSXElementConstructor<React.ReactNode>
-	>;
+	rightIcon?: ButtonProps["rightIcon"];
+	hasUserName?: boolean;
 	commonStyles: ButtonProps;
 	render: boolean;
 };
 
 export const buttonsPanel = (
 	userStatus: boolean,
-	dispatch?: (action: Action) => void,
-	onClick?: (() => void)[] | undefined
+	dispatch: (action: Action) => void,
+	onClick: (() => void)[]
 ): Button[] => [
 	{
-		text: userStatus ? UserStatusStatus.LOGOUT : UserStatusStatus.LOGIN,
+		text: userStatus ? "" : UserStatusStatus.LOGIN,
 		onClick,
 		as: Button,
-		rightIcon: <EmailIcon w={8} h={8} color="purple.700" />,
+		rightIcon: userStatus ? <User w={8} h={8} color="purple.700" /> : undefined,
 		commonStyles,
+		hasUserName: userStatus ? true : false,
 		render: true,
 	},
 	{
@@ -47,7 +45,7 @@ export const buttonsPanel = (
 		render: !userStatus,
 	},
 	{
-		text: UserStatusStatus.LOGGED,
+		text: UserStatusStatus.LOGOUT,
 		onClick,
 		commonStyles,
 		render: userStatus,

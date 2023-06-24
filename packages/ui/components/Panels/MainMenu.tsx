@@ -10,11 +10,12 @@ export const MainMenu = () => {
 		(state: RootState) => state.userStatus
 	);
 	const dispatch = useDispatch();
-	const buttons = buttonsPanel(userStatus, dispatch, [
+	const buttonsHandlers = [
 		() => dispatch(userLogin()),
 		() => console.log(UserStatusStatus.REGISTER),
 		() => console.log(UserStatusStatus.LOGOUT),
-	]);
+	];
+	const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
 
 	return (
 		<Menu>
@@ -25,11 +26,10 @@ export const MainMenu = () => {
 				gap="4"
 			>
 				{buttons.map(
-					({ text, render, onClick, commonStyles, rightIcon, ...rest }, i) =>
+					({ text, render, onClick, hasUserName, commonStyles, ...rest }, i) =>
 						render && (
 							<Button
 								key={text}
-								rightIcon={rightIcon}
 								{...rest}
 								{...commonStyles}
 								onClick={() => {
@@ -38,6 +38,8 @@ export const MainMenu = () => {
 									}
 								}}
 							>
+								{hasUserName && userName?.toUpperCase()}
+								{` `}
 								{text}
 							</Button>
 						)
