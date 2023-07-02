@@ -181,7 +181,7 @@ var MainBoard = ({
   title,
   children
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_react_dnd3.DndProvider, { backend: import_react_dnd_html5_backend.HTML5Backend, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(import_react3.Box, { display: "flex", width: "100%", m: 2, children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_react_dnd3.DndProvider, { backend: import_react_dnd_html5_backend.HTML5Backend, children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(import_react3.Box, { display: "flex", width: "100%", boxSizing: "border-box", children: [
     /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(TaskListDnD, {}),
     /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(
       import_react3.Box,

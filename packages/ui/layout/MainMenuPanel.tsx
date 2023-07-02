@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
-import { Text } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { MainMenu } from "../components/Panels/MainMenu";
 import { store } from "../store/store";

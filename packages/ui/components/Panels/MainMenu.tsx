@@ -1,19 +1,25 @@
-import { Menu, Button, Flex } from "@chakra-ui/react";
+import { useState } from "react";
+import { Menu, Button, Flex, useDisclosure } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { userLogin } from "../../store/userInfoSlice";
 import { buttonsPanel } from "./LoginButtons";
 import { UserStatusStatus } from "../../const/const";
+import { InitialFocus } from "./Modal";
 
 export const MainMenu = () => {
+	const [registerInit, setRegisterInit] = useState(false);
 	const { userStatus, userName } = useSelector(
 		(state: RootState) => state.userStatus
 	);
 	const dispatch = useDispatch();
 	const buttonsHandlers = [
 		() => dispatch(userLogin()),
-		() => console.log(UserStatusStatus.REGISTER),
-		() => console.log(UserStatusStatus.LOGOUT),
+		() => setRegisterInit(!registerInit),
+		() => {
+			console.log(UserStatusStatus.LOGOUT);
+			dispatch(userLogin());
+		},
 	];
 	const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
 
@@ -25,6 +31,8 @@ export const MainMenu = () => {
 				justifyContent="right"
 				gap="4"
 			>
+				<InitialFocus registerInit={registerInit} />
+
 				{buttons.map(
 					({ text, render, onClick, hasUserName, commonStyles, ...rest }, i) =>
 						render && (

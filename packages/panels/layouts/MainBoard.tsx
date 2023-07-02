@@ -13,7 +13,7 @@ export const MainBoard = ({
 }) => {
 	return (
 		<DndProvider backend={HTML5Backend}>
-			<Box display="flex" width="100%" m={2}>
+			<Box display="flex" width="100%" boxSizing="border-box">
 				<TaskListDnD />
 				<Box
 					display="flex"

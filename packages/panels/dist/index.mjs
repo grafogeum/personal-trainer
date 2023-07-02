@@ -145,7 +145,7 @@ var MainBoard = ({
   title,
   children
 }) => {
-  return /* @__PURE__ */ jsx4(DndProvider, { backend: HTML5Backend, children: /* @__PURE__ */ jsxs(Box2, { display: "flex", width: "100%", m: 2, children: [
+  return /* @__PURE__ */ jsx4(DndProvider, { backend: HTML5Backend, children: /* @__PURE__ */ jsxs(Box2, { display: "flex", width: "100%", boxSizing: "border-box", children: [
     /* @__PURE__ */ jsx4(TaskListDnD, {}),
     /* @__PURE__ */ jsxs(
       Box2,

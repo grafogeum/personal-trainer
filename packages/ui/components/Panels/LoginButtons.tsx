@@ -1,4 +1,3 @@
-import { JSXElementConstructor, ReactElement } from "react";
 import { Button, ButtonProps } from "@chakra-ui/react";
 import { Action } from "redux";
 import { UserStatusStatus } from "../../const/const";
