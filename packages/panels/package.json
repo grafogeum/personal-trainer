@@ -1,5 +1,5 @@
 {
-  "name": "ui",
+  "name": "panels",
   "version": "0.0.0",
   "main": "./index.tsx",
   "module": "./dist/index.mjs",
@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsup index.tsx --format esm,cjs --dts --external react",
-    "dev": "tsup index.tsx --format esm,cjs --watch --dts --external react",
+    "dev": "DISABLE_ESLINT_PLUGIN=true tsup index.tsx --format esm,cjs --watch --dts --external react",
     "lint": "eslint \"**/*.ts*\"",
     "generate:component": "turbo gen react-component"
   },
@@ -21,17 +21,13 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.7.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@reduxjs/toolkit": "^1.9.5",
     "framer-motion": "^10.12.16",
-    "lodash": "^4.17.21",
-    "react-hook-form": "^7.45.0",
-    "react-redux": "^8.1.1",
-    "redux": "^4.2.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "tsup": "^6.7.0",
-    "yup": "^1.2.0"
+    "usehooks-ts": "^2.9.1"
   }
 }
