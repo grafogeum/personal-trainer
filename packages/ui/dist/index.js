@@ -166,99 +166,60 @@ var buttonsPanel = (userStatus, dispatch, onClick) => [
   }
 ];
 
-// components/Panels/Modal.tsx
-var import_react9 = require("@chakra-ui/react");
-var import_react10 = require("react");
+// components/Panels/Modal/Modal.tsx
+var import_react8 = require("@chakra-ui/react");
+var import_react9 = require("react");
 
-// components/Atoms/Form.tsx
-var import_react2 = require("@chakra-ui/react");
-var import_jsx_runtime3 = require("react/jsx-runtime");
-var Form = ({
-  children,
-  onSubmit
-}) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("form", { onSubmit, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_react2.FormControl, { mt: 4, isRequired: true, children }),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_react2.Input, { type: "submit" })
-  ] });
-};
+// components/Panels/Modal/ModalLabel.tsx
+var import_react3 = require("@chakra-ui/react");
+var import_react4 = require("react");
 
-// components/Panels/Modal/ModalContext.ts
-var import_react3 = require("react");
-var ModalContext = (0, import_react3.createContext)({
-  labelProps: "",
-  multipleLabels: [""],
-  inputType: "",
-  multipleInputs: [""],
-  state: { errorMessages: { inputType: null } }
+// components/Panels/Modal/state/ModalContext.ts
+var import_react2 = require("react");
+var ModalContext = (0, import_react2.createContext)({
+  state: {
+    isTyping: false,
+    errorMessages: {}
+  },
+  dispatch: (arg) => {
+  }
 });
 var ModalContext_default = ModalContext;
 
-// components/Panels/Modal/ModalContentProvider.tsx
-var import_react4 = require("react");
-var import_jsx_runtime4 = require("react/jsx-runtime");
-var initialState2 = {
-  errorMessages: { inputType: null }
-};
-var ModalContentProvider = ({
-  children,
-  state = initialState2,
-  dispatch
-}) => {
-  const modalValue = (0, import_react4.useMemo)(
-    () => ({
-      labelProps: "Label",
-      multipleLabels: ["Email", "Password"],
-      inputType: "",
-      multipleInputs: ["mail", "password"],
-      state,
-      dispatch
-    }),
-    [state, dispatch]
-  );
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(ModalContext_default.Provider, { value: modalValue, children });
-};
-
 // components/Panels/Modal/ModalLabel.tsx
-var import_react5 = require("@chakra-ui/react");
-var import_react6 = require("react");
-var import_jsx_runtime5 = require("react/jsx-runtime");
+var import_jsx_runtime3 = require("react/jsx-runtime");
+var LabelStyle = {
+  color: "#D6BCFA",
+  position: "absolute",
+  top: "-5px",
+  paddingLeft: "5px"
+};
 var Label = ({ labelProps }) => {
-  const { multipleLabels } = (0, import_react6.useContext)(ModalContext_default);
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_jsx_runtime5.Fragment, { children: labelProps ? /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-    import_react5.FormLabel,
+  const { multipleLabels } = (0, import_react4.useContext)(ModalContext_default);
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_jsx_runtime3.Fragment, { children: labelProps ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
+    import_react3.FormLabel,
     {
       sx: { position: "relative", margin: "0.25rem " },
-      requiredIndicator: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-        "span",
-        {
-          style: {
-            color: "#D6BCFA",
-            position: "absolute",
-            top: "-5px",
-            paddingLeft: "5px"
-          },
-          children: "\uFF0A"
-        }
-      ),
+      requiredIndicator: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("span", { style: LabelStyle, children: "\uFF0A" }),
       children: labelProps
     }
-  ) : multipleLabels.map((label) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_react5.FormLabel, { children: label }, label)) });
+  ) : multipleLabels.map((label) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_react3.FormLabel, { children: label }, label)) });
 };
 
 // components/Panels/Modal/ModalInput.tsx
-var import_react7 = require("@chakra-ui/react");
-var import_react8 = require("react");
-var import_jsx_runtime6 = require("react/jsx-runtime");
+var import_react5 = require("@chakra-ui/react");
+var import_react6 = require("react");
+var import_jsx_runtime4 = require("react/jsx-runtime");
 var FormInput = ({
   inputType = "",
   refer
 }) => {
   const {
-    state: { errorMessages }
-  } = (0, import_react8.useContext)(ModalContext_default);
+    state: { errorMessages },
+    dispatch
+  } = (0, import_react6.useContext)(ModalContext_default);
   const errorText = inputType && inputType in errorMessages ? errorMessages[inputType] : "";
-  const [inputField, setInputField] = (0, import_react8.useState)({
+  const [inputField, setInputField] = (0, import_react6.useState)({
     [inputType]: ""
   });
   const borderColor = !errorMessages[inputType] ? "purple.200" : "red.800";
@@ -269,14 +230,32 @@ var FormInput = ({
     backgroundColor: "transparent",
     color: "inherit"
   };
+  const isTypingDispatch = {
+    type: "IS_TYPING" /* IS_TYPING */,
+    payload: false
+  };
+  (0, import_react6.useEffect)(() => {
+    const timer = setTimeout(() => {
+      dispatch(isTypingDispatch);
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [inputField]);
+  (0, import_react6.useEffect)(() => {
+    dispatch(__spreadProps(__spreadValues({}, isTypingDispatch), { payload: true }));
+    return () => {
+      dispatch(isTypingDispatch);
+    };
+  }, [inputField]);
   const handleInputChange = (e, type) => {
     type === inputType && setInputField((prevInputField) => __spreadProps(__spreadValues({}, prevInputField), {
       [inputType]: e.target.value
     }));
   };
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_jsx_runtime6.Fragment, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-      import_react7.Input,
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(import_jsx_runtime4.Fragment, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+      import_react5.Input,
       {
         id: inputType,
         ref: refer,
@@ -290,25 +269,144 @@ var FormInput = ({
         sx: inputStyle
       }
     ),
-    errorMessages && /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.Text, { color: "red.600", children: errorText })
+    errorMessages && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_react5.Text, { color: "red.600", children: errorText })
   ] });
 };
 
 // components/Panels/Modal/ModalPanel.tsx
-var import_jsx_runtime7 = require("react/jsx-runtime");
-var ModalPanel = ({ children }) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_jsx_runtime7.Fragment, { children });
+var import_jsx_runtime5 = require("react/jsx-runtime");
+var ModalPanel = ({ children }) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_jsx_runtime5.Fragment, { children });
 ModalPanel.Label = Label;
 ModalPanel.Input = FormInput;
 
-// components/Panels/Modal.tsx
-var yup = __toESM(require("yup"));
-
-// components/Panels/Modal/ModalReducer.ts
-var initialState3 = {
-  errorMessages: []
+// components/Atoms/Form.tsx
+var import_react7 = require("@chakra-ui/react");
+var import_jsx_runtime6 = require("react/jsx-runtime");
+var Form = ({
+  children,
+  onSubmit
+}) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("form", { onSubmit, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.FormControl, { mt: 4, isRequired: true, children }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.Input, { type: "submit" })
+  ] });
 };
-var ModalReducer = (state = initialState3, action) => {
+
+// components/Panels/Modal/Modal.tsx
+var yup = __toESM(require("yup"));
+var import_jsx_runtime7 = require("react/jsx-runtime");
+var personSchema = yup.object({
+  email: yup.string().default("mail@domain.com").nullable("Email is invalid").email("Email is invalid").matches(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/, "Email is invalid").required("Email is required"),
+  password: yup.string().min(8, "Password is to short").max(40, "Password is to long").required("Password is required")
+});
+var validateHelper = (formData) => __async(void 0, null, function* () {
+  yield personSchema.validate(formData, { abortEarly: false });
+});
+var InitialFocus = ({ registerInit }) => {
+  var _a, _b, _c, _d;
+  const [initialized, setInitialized] = (0, import_react9.useState)(false);
+  const { isOpen, onOpen, onClose } = (0, import_react8.useDisclosure)();
+  const [validationAttempt, setValidationAttempt] = (0, import_react9.useState)(0);
+  const {
+    state: { isTyping },
+    dispatch
+  } = (0, import_react9.useContext)(ModalContext_default);
+  (0, import_react9.useEffect)(() => {
+    initialized ? onOpen() : setInitialized(true);
+  }, [registerInit, registerInit]);
+  const initialRef = (0, import_react9.useRef)(null);
+  const finalRef = (0, import_react9.useRef)(null);
+  const userEmailRef = (0, import_react9.useRef)(null);
+  const userPasswordRef = (0, import_react9.useRef)(null);
+  const formData = {
+    email: (_b = (_a = userEmailRef.current) == null ? void 0 : _a.value) != null ? _b : "",
+    password: (_d = (_c = userPasswordRef.current) == null ? void 0 : _c.value) != null ? _d : ""
+  };
+  const validateAndDispatch = (formData2) => __async(void 0, null, function* () {
+    const errorDispatch = {
+      type: "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */,
+      payload: {}
+    };
+    try {
+      yield validateHelper(formData2);
+      dispatch(errorDispatch);
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        const errors = {};
+        error.inner.forEach((err) => {
+          errors[err.path] = err.message;
+        });
+        dispatch(__spreadProps(__spreadValues({}, errorDispatch), {
+          payload: errors
+        }));
+      }
+    }
+  });
+  const handleSubmit = (e) => __async(void 0, null, function* () {
+    e.preventDefault();
+    if (!userEmailRef.current || !userPasswordRef.current) {
+      return;
+    }
+    yield validateAndDispatch(formData);
+    setValidationAttempt((prev) => prev + 1);
+  });
+  (0, import_react9.useEffect)(() => {
+    validationAttempt > 0 && validateAndDispatch(formData);
+  }, [isTyping, validationAttempt]);
+  return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_jsx_runtime7.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
+    import_react8.Modal,
+    {
+      initialFocusRef: initialRef,
+      finalFocusRef: finalRef,
+      isOpen,
+      onClose,
+      children: [
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalOverlay, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
+          import_react8.ModalContent,
+          {
+            backgroundColor: "gray.800",
+            color: "white",
+            borderRadius: "md",
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalHeader, { color: "purple.200", children: "Create your account" }),
+              /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalCloseButton, {}),
+              /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Form, { onSubmit: handleSubmit, children: [
+                /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalBody, { pb: 6, children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(ModalPanel, { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: "Email" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Input, { inputType: "email", refer: userEmailRef }),
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: "Password" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+                    ModalPanel.Input,
+                    {
+                      inputType: "password",
+                      refer: userPasswordRef
+                    }
+                  )
+                ] }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react8.ModalFooter, { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { bg: "green.200", mr: 3, children: "Save" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { onClick: onClose, children: "Cancel" })
+                ] })
+              ] })
+            ]
+          }
+        )
+      ]
+    }
+  ) });
+};
+
+// components/Panels/Modal/state/ModalContentProvider.tsx
+var import_react10 = require("react");
+
+// components/Panels/Modal/state/ModalReducer.ts
+var ModalReducer = (state, action) => {
   switch (action.type) {
+    case "IS_TYPING" /* IS_TYPING */:
+      return __spreadProps(__spreadValues({}, state), {
+        isTyping: action.payload
+      });
     case "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */:
       return __spreadProps(__spreadValues({}, state), {
         errorMessages: action.payload
@@ -318,115 +416,29 @@ var ModalReducer = (state = initialState3, action) => {
   }
 };
 
-// components/Panels/Modal.tsx
+// components/Panels/Modal/state/ModalContentProvider.tsx
 var import_jsx_runtime8 = require("react/jsx-runtime");
-var personSchema = yup.object({
-  email: yup.string().default("mail@domain.com").nullable("Email is invalid").email("Email is invalid").matches(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/, "Email is invalid").required("Email is required"),
-  password: yup.string().min(8, "Password is to short").max(40, "Password is to long").required("Password is required")
-});
-var InitialFocus = ({ registerInit }) => {
-  const [initialized, setInitialized] = (0, import_react10.useState)(false);
-  const { isOpen, onOpen, onClose } = (0, import_react9.useDisclosure)();
-  const [formValues, setFormValues] = (0, import_react10.useState)({
-    email: "",
-    password: ""
-  });
-  const [formErrors, setFormErrors] = (0, import_react10.useState)({
-    email: "",
-    password: ""
-  });
-  const initialState4 = {
-    errorMessages: { inputType: null }
-  };
-  const [state, dispatch] = (0, import_react10.useReducer)(ModalReducer, initialState4);
-  (0, import_react10.useEffect)(() => {
-    initialized ? onOpen() : setInitialized(true);
-  }, [registerInit, registerInit]);
-  const initialRef = (0, import_react10.useRef)(null);
-  const finalRef = (0, import_react10.useRef)(null);
-  const userEmailRef = (0, import_react10.useRef)(null);
-  const userPasswordRef = (0, import_react10.useRef)(null);
-  const handleSubmit = (e) => __async(void 0, null, function* () {
-    e.preventDefault();
-    if (!userEmailRef.current || !userPasswordRef.current) {
-      return;
-    }
-    const formData = {
-      email: userEmailRef.current.value,
-      password: userPasswordRef.current.value
-    };
-    try {
-      yield personSchema.validate(formData, { abortEarly: false });
-      setFormValues(formData);
-      dispatch({
-        type: "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */,
-        payload: {
-          email: "",
-          password: ""
-        }
-      });
-    } catch (error) {
-      if (error instanceof yup.ValidationError) {
-        const errors = {};
-        error.inner.forEach((err) => {
-          errors[err.path] = err.message;
-        });
-        setFormErrors(errors);
-        dispatch({
-          type: "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */,
-          payload: errors
-        });
-      }
-    }
-    try {
-      setFormValues(formData);
-    } catch (error) {
-    }
-  });
-  (0, import_react10.useEffect)(() => {
-  }, [formErrors, formValues]);
-  return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_jsx_runtime8.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(
-    import_react9.Modal,
-    {
-      initialFocusRef: initialRef,
-      finalFocusRef: finalRef,
-      isOpen,
-      onClose,
-      children: [
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react9.ModalOverlay, {}),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(
-          import_react9.ModalContent,
-          {
-            backgroundColor: "gray.800",
-            color: "white",
-            borderRadius: "md",
-            children: [
-              /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react9.ModalHeader, { color: "purple.200", children: "Create your account" }),
-              /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react9.ModalCloseButton, {}),
-              /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ModalContentProvider, { state, dispatch, children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(Form, { onSubmit: handleSubmit, children: [
-                /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react9.ModalBody, { pb: 6, children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(ModalPanel, { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ModalPanel.Label, { labelProps: "Email" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ModalPanel.Input, { inputType: "email", refer: userEmailRef }),
-                  /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ModalPanel.Label, { labelProps: "Password" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
-                    ModalPanel.Input,
-                    {
-                      inputType: "password",
-                      refer: userPasswordRef
-                    }
-                  )
-                ] }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(import_react9.ModalFooter, { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react9.Button, { bg: "green.200", mr: 3, children: "Save" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_react9.Button, { onClick: onClose, children: "Cancel" })
-                ] })
-              ] }) })
-            ]
-          }
-        )
-      ]
-    }
-  ) });
+var initialState2 = {
+  errorMessages: { inputType: "" },
+  isTyping: false,
+  labelProps: "Label",
+  multipleLabels: ["Email", "Password"],
+  inputType: null,
+  multipleInputs: ["mail", "password"],
+  test: "test"
+};
+var ModalContentProvider = ({
+  children
+}) => {
+  const [state, dispatch] = (0, import_react10.useReducer)(ModalReducer, initialState2);
+  const modalValue = (0, import_react10.useMemo)(
+    () => ({
+      state,
+      dispatch
+    }),
+    [state, dispatch]
+  );
+  return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ModalContext_default.Provider, { value: modalValue, children });
 };
 
 // components/Panels/MainMenu.tsx
@@ -454,7 +466,7 @@ var MainMenu = () => {
       justifyContent: "right",
       gap: "4",
       children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(InitialFocus, { registerInit }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ModalContentProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(InitialFocus, { registerInit }) }),
         buttons.map(
           (_a, i) => {
             var _b = _a, { text, render, onClick, hasUserName, commonStyles: commonStyles2 } = _b, rest = __objRest(_b, ["text", "render", "onClick", "hasUserName", "commonStyles"]);

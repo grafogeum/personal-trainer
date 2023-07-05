@@ -1,0 +1,6 @@
+export enum ModalActionTypes {
+	// OPEN_MODAL = "OPEN_MODAL",
+	// CLOSE_MODAL = "CLOSE_MODAL",
+	IS_TYPING = "IS_TYPING",
+	SET_ERROR_MESSAGES = "SET_ERROR_MESSAGES",
+}

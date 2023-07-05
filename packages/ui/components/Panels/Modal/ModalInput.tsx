@@ -1,6 +1,7 @@
 import { Input, Text } from "@chakra-ui/react";
-import { useContext, useState } from "react";
-import ModalContext from "./ModalContext";
+import { useContext, useEffect, useState } from "react";
+import ModalContext from "./state/ModalContext";
+import { ModalActionTypes } from "./state/ModalActions";
 
 export const FormInput = ({
 	inputType = "",
@@ -11,6 +12,7 @@ export const FormInput = ({
 }) => {
 	const {
 		state: { errorMessages },
+		dispatch,
 	} = useContext(ModalContext);
 	const errorText =
 		inputType && inputType in errorMessages
@@ -32,6 +34,28 @@ export const FormInput = ({
 		color: "inherit",
 	};
 
+	const isTypingDispatch = {
+		type: ModalActionTypes.IS_TYPING,
+		payload: false,
+	};
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			dispatch(isTypingDispatch);
+		}, 500);
+
+		return () => {
+			clearTimeout(timer);
+		};
+	}, [inputField]);
+
+	useEffect(() => {
+		dispatch({ ...isTypingDispatch, payload: true });
+		return () => {
+			dispatch(isTypingDispatch);
+		};
+	}, [inputField]);
+
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement>,
 		type?: string
@@ -41,7 +65,6 @@ export const FormInput = ({
 				...prevInputField,
 				[inputType]: e.target.value,
 			}));
-		// dispatch({});
 	};
 
 	return (
@@ -59,7 +82,7 @@ export const FormInput = ({
 				backgroundColor="#393939"
 				sx={inputStyle}
 			/>
-			{errorMessages && <Text color="red.600">{errorText}</Text>}
+			{errorMessages && <Text color="red.600">{errorText as string}</Text>}
 		</>
 	);
 };

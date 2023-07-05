@@ -133,7 +133,7 @@ var buttonsPanel = (userStatus, dispatch, onClick) => [
   }
 ];
 
-// components/Panels/Modal.tsx
+// components/Panels/Modal/Modal.tsx
 import {
   Modal,
   ModalOverlay,
@@ -145,94 +145,55 @@ import {
   Button as Button2,
   useDisclosure
 } from "@chakra-ui/react";
-import { useEffect, useReducer, useRef, useState as useState2 } from "react";
-
-// components/Atoms/Form.tsx
-import { FormControl, Input } from "@chakra-ui/react";
-import { jsx as jsx3, jsxs } from "react/jsx-runtime";
-var Form = ({
-  children,
-  onSubmit
-}) => {
-  return /* @__PURE__ */ jsxs("form", { onSubmit, children: [
-    /* @__PURE__ */ jsx3(FormControl, { mt: 4, isRequired: true, children }),
-    /* @__PURE__ */ jsx3(Input, { type: "submit" })
-  ] });
-};
-
-// components/Panels/Modal/ModalContext.ts
-import { createContext } from "react";
-var ModalContext = createContext({
-  labelProps: "",
-  multipleLabels: [""],
-  inputType: "",
-  multipleInputs: [""],
-  state: { errorMessages: { inputType: null } }
-});
-var ModalContext_default = ModalContext;
-
-// components/Panels/Modal/ModalContentProvider.tsx
-import { useMemo } from "react";
-import { jsx as jsx4 } from "react/jsx-runtime";
-var initialState2 = {
-  errorMessages: { inputType: null }
-};
-var ModalContentProvider = ({
-  children,
-  state = initialState2,
-  dispatch
-}) => {
-  const modalValue = useMemo(
-    () => ({
-      labelProps: "Label",
-      multipleLabels: ["Email", "Password"],
-      inputType: "",
-      multipleInputs: ["mail", "password"],
-      state,
-      dispatch
-    }),
-    [state, dispatch]
-  );
-  return /* @__PURE__ */ jsx4(ModalContext_default.Provider, { value: modalValue, children });
-};
+import { useContext as useContext3, useEffect as useEffect2, useRef, useState as useState2 } from "react";
 
 // components/Panels/Modal/ModalLabel.tsx
 import { FormLabel } from "@chakra-ui/react";
 import { useContext } from "react";
-import { Fragment, jsx as jsx5 } from "react/jsx-runtime";
+
+// components/Panels/Modal/state/ModalContext.ts
+import { createContext } from "react";
+var ModalContext = createContext({
+  state: {
+    isTyping: false,
+    errorMessages: {}
+  },
+  dispatch: (arg) => {
+  }
+});
+var ModalContext_default = ModalContext;
+
+// components/Panels/Modal/ModalLabel.tsx
+import { Fragment, jsx as jsx3 } from "react/jsx-runtime";
+var LabelStyle = {
+  color: "#D6BCFA",
+  position: "absolute",
+  top: "-5px",
+  paddingLeft: "5px"
+};
 var Label = ({ labelProps }) => {
   const { multipleLabels } = useContext(ModalContext_default);
-  return /* @__PURE__ */ jsx5(Fragment, { children: labelProps ? /* @__PURE__ */ jsx5(
+  return /* @__PURE__ */ jsx3(Fragment, { children: labelProps ? /* @__PURE__ */ jsx3(
     FormLabel,
     {
       sx: { position: "relative", margin: "0.25rem " },
-      requiredIndicator: /* @__PURE__ */ jsx5(
-        "span",
-        {
-          style: {
-            color: "#D6BCFA",
-            position: "absolute",
-            top: "-5px",
-            paddingLeft: "5px"
-          },
-          children: "\uFF0A"
-        }
-      ),
+      requiredIndicator: /* @__PURE__ */ jsx3("span", { style: LabelStyle, children: "\uFF0A" }),
       children: labelProps
     }
-  ) : multipleLabels.map((label) => /* @__PURE__ */ jsx5(FormLabel, { children: label }, label)) });
+  ) : multipleLabels.map((label) => /* @__PURE__ */ jsx3(FormLabel, { children: label }, label)) });
 };
 
 // components/Panels/Modal/ModalInput.tsx
-import { Input as Input2, Text } from "@chakra-ui/react";
-import { useContext as useContext2, useState } from "react";
-import { Fragment as Fragment2, jsx as jsx6, jsxs as jsxs2 } from "react/jsx-runtime";
+import { Input, Text } from "@chakra-ui/react";
+import { useContext as useContext2, useEffect, useState } from "react";
+import { Fragment as Fragment2, jsx as jsx4, jsxs } from "react/jsx-runtime";
 var FormInput = ({
   inputType = "",
   refer
 }) => {
   const {
-    state: { errorMessages }
+    state: { errorMessages },
+    dispatch
   } = useContext2(ModalContext_default);
   const errorText = inputType && inputType in errorMessages ? errorMessages[inputType] : "";
   const [inputField, setInputField] = useState({
@@ -246,14 +207,32 @@ var FormInput = ({
     backgroundColor: "transparent",
     color: "inherit"
   };
+  const isTypingDispatch = {
+    type: "IS_TYPING" /* IS_TYPING */,
+    payload: false
+  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch(isTypingDispatch);
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [inputField]);
+  useEffect(() => {
+    dispatch(__spreadProps(__spreadValues({}, isTypingDispatch), { payload: true }));
+    return () => {
+      dispatch(isTypingDispatch);
+    };
+  }, [inputField]);
   const handleInputChange = (e, type) => {
     type === inputType && setInputField((prevInputField) => __spreadProps(__spreadValues({}, prevInputField), {
       [inputType]: e.target.value
     }));
   };
-  return /* @__PURE__ */ jsxs2(Fragment2, { children: [
-    /* @__PURE__ */ jsx6(
-      Input2,
+  return /* @__PURE__ */ jsxs(Fragment2, { children: [
+    /* @__PURE__ */ jsx4(
+      Input,
       {
         id: inputType,
         ref: refer,
@@ -267,25 +246,144 @@ var FormInput = ({
         sx: inputStyle
       }
     ),
-    errorMessages && /* @__PURE__ */ jsx6(Text, { color: "red.600", children: errorText })
+    errorMessages && /* @__PURE__ */ jsx4(Text, { color: "red.600", children: errorText })
   ] });
 };
 
 // components/Panels/Modal/ModalPanel.tsx
-import { Fragment as Fragment3, jsx as jsx7 } from "react/jsx-runtime";
-var ModalPanel = ({ children }) => /* @__PURE__ */ jsx7(Fragment3, { children });
+import { Fragment as Fragment3, jsx as jsx5 } from "react/jsx-runtime";
+var ModalPanel = ({ children }) => /* @__PURE__ */ jsx5(Fragment3, { children });
 ModalPanel.Label = Label;
 ModalPanel.Input = FormInput;
 
-// components/Panels/Modal.tsx
-import * as yup from "yup";
-
-// components/Panels/Modal/ModalReducer.ts
-var initialState3 = {
-  errorMessages: []
+// components/Atoms/Form.tsx
+import { FormControl, Input as Input2 } from "@chakra-ui/react";
+import { jsx as jsx6, jsxs as jsxs2 } from "react/jsx-runtime";
+var Form = ({
+  children,
+  onSubmit
+}) => {
+  return /* @__PURE__ */ jsxs2("form", { onSubmit, children: [
+    /* @__PURE__ */ jsx6(FormControl, { mt: 4, isRequired: true, children }),
+    /* @__PURE__ */ jsx6(Input2, { type: "submit" })
+  ] });
 };
-var ModalReducer = (state = initialState3, action) => {
+
+// components/Panels/Modal/Modal.tsx
+import * as yup from "yup";
+import { Fragment as Fragment4, jsx as jsx7, jsxs as jsxs3 } from "react/jsx-runtime";
+var personSchema = yup.object({
+  email: yup.string().default("mail@domain.com").nullable("Email is invalid").email("Email is invalid").matches(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/, "Email is invalid").required("Email is required"),
+  password: yup.string().min(8, "Password is to short").max(40, "Password is to long").required("Password is required")
+});
+var validateHelper = (formData) => __async(void 0, null, function* () {
+  yield personSchema.validate(formData, { abortEarly: false });
+});
+var InitialFocus = ({ registerInit }) => {
+  var _a, _b, _c, _d;
+  const [initialized, setInitialized] = useState2(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [validationAttempt, setValidationAttempt] = useState2(0);
+  const {
+    state: { isTyping },
+    dispatch
+  } = useContext3(ModalContext_default);
+  useEffect2(() => {
+    initialized ? onOpen() : setInitialized(true);
+  }, [registerInit, registerInit]);
+  const initialRef = useRef(null);
+  const finalRef = useRef(null);
+  const userEmailRef = useRef(null);
+  const userPasswordRef = useRef(null);
+  const formData = {
+    email: (_b = (_a = userEmailRef.current) == null ? void 0 : _a.value) != null ? _b : "",
+    password: (_d = (_c = userPasswordRef.current) == null ? void 0 : _c.value) != null ? _d : ""
+  };
+  const validateAndDispatch = (formData2) => __async(void 0, null, function* () {
+    const errorDispatch = {
+      type: "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */,
+      payload: {}
+    };
+    try {
+      yield validateHelper(formData2);
+      dispatch(errorDispatch);
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        const errors = {};
+        error.inner.forEach((err) => {
+          errors[err.path] = err.message;
+        });
+        dispatch(__spreadProps(__spreadValues({}, errorDispatch), {
+          payload: errors
+        }));
+      }
+    }
+  });
+  const handleSubmit = (e) => __async(void 0, null, function* () {
+    e.preventDefault();
+    if (!userEmailRef.current || !userPasswordRef.current) {
+      return;
+    }
+    yield validateAndDispatch(formData);
+    setValidationAttempt((prev) => prev + 1);
+  });
+  useEffect2(() => {
+    validationAttempt > 0 && validateAndDispatch(formData);
+  }, [isTyping, validationAttempt]);
+  return /* @__PURE__ */ jsx7(Fragment4, { children: /* @__PURE__ */ jsxs3(
+    Modal,
+    {
+      initialFocusRef: initialRef,
+      finalFocusRef: finalRef,
+      isOpen,
+      onClose,
+      children: [
+        /* @__PURE__ */ jsx7(ModalOverlay, {}),
+        /* @__PURE__ */ jsxs3(
+          ModalContent,
+          {
+            backgroundColor: "gray.800",
+            color: "white",
+            borderRadius: "md",
+            children: [
+              /* @__PURE__ */ jsx7(ModalHeader, { color: "purple.200", children: "Create your account" }),
+              /* @__PURE__ */ jsx7(ModalCloseButton, {}),
+              /* @__PURE__ */ jsxs3(Form, { onSubmit: handleSubmit, children: [
+                /* @__PURE__ */ jsx7(ModalBody, { pb: 6, children: /* @__PURE__ */ jsxs3(ModalPanel, { children: [
+                  /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: "Email" }),
+                  /* @__PURE__ */ jsx7(ModalPanel.Input, { inputType: "email", refer: userEmailRef }),
+                  /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: "Password" }),
+                  /* @__PURE__ */ jsx7(
+                    ModalPanel.Input,
+                    {
+                      inputType: "password",
+                      refer: userPasswordRef
+                    }
+                  )
+                ] }) }),
+                /* @__PURE__ */ jsxs3(ModalFooter, { children: [
+                  /* @__PURE__ */ jsx7(Button2, { bg: "green.200", mr: 3, children: "Save" }),
+                  /* @__PURE__ */ jsx7(Button2, { onClick: onClose, children: "Cancel" })
+                ] })
+              ] })
+            ]
+          }
+        )
+      ]
+    }
+  ) });
+};
+
+// components/Panels/Modal/state/ModalContentProvider.tsx
+import { useMemo, useReducer } from "react";
+
+// components/Panels/Modal/state/ModalReducer.ts
+var ModalReducer = (state, action) => {
   switch (action.type) {
+    case "IS_TYPING" /* IS_TYPING */:
+      return __spreadProps(__spreadValues({}, state), {
+        isTyping: action.payload
+      });
     case "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */:
       return __spreadProps(__spreadValues({}, state), {
         errorMessages: action.payload
@@ -295,115 +393,29 @@ var ModalReducer = (state = initialState3, action) => {
   }
 };
 
-// components/Panels/Modal.tsx
-import { Fragment as Fragment4, jsx as jsx8, jsxs as jsxs3 } from "react/jsx-runtime";
-var personSchema = yup.object({
-  email: yup.string().default("mail@domain.com").nullable("Email is invalid").email("Email is invalid").matches(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/, "Email is invalid").required("Email is required"),
-  password: yup.string().min(8, "Password is to short").max(40, "Password is to long").required("Password is required")
-});
-var InitialFocus = ({ registerInit }) => {
-  const [initialized, setInitialized] = useState2(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [formValues, setFormValues] = useState2({
-    email: "",
-    password: ""
-  });
-  const [formErrors, setFormErrors] = useState2({
-    email: "",
-    password: ""
-  });
-  const initialState4 = {
-    errorMessages: { inputType: null }
-  };
-  const [state, dispatch] = useReducer(ModalReducer, initialState4);
-  useEffect(() => {
-    initialized ? onOpen() : setInitialized(true);
-  }, [registerInit, registerInit]);
-  const initialRef = useRef(null);
-  const finalRef = useRef(null);
-  const userEmailRef = useRef(null);
-  const userPasswordRef = useRef(null);
-  const handleSubmit = (e) => __async(void 0, null, function* () {
-    e.preventDefault();
-    if (!userEmailRef.current || !userPasswordRef.current) {
-      return;
-    }
-    const formData = {
-      email: userEmailRef.current.value,
-      password: userPasswordRef.current.value
-    };
-    try {
-      yield personSchema.validate(formData, { abortEarly: false });
-      setFormValues(formData);
-      dispatch({
-        type: "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */,
-        payload: {
-          email: "",
-          password: ""
-        }
-      });
-    } catch (error) {
-      if (error instanceof yup.ValidationError) {
-        const errors = {};
-        error.inner.forEach((err) => {
-          errors[err.path] = err.message;
-        });
-        setFormErrors(errors);
-        dispatch({
-          type: "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */,
-          payload: errors
-        });
-      }
-    }
-    try {
-      setFormValues(formData);
-    } catch (error) {
-    }
-  });
-  useEffect(() => {
-  }, [formErrors, formValues]);
-  return /* @__PURE__ */ jsx8(Fragment4, { children: /* @__PURE__ */ jsxs3(
-    Modal,
-    {
-      initialFocusRef: initialRef,
-      finalFocusRef: finalRef,
-      isOpen,
-      onClose,
-      children: [
-        /* @__PURE__ */ jsx8(ModalOverlay, {}),
-        /* @__PURE__ */ jsxs3(
-          ModalContent,
-          {
-            backgroundColor: "gray.800",
-            color: "white",
-            borderRadius: "md",
-            children: [
-              /* @__PURE__ */ jsx8(ModalHeader, { color: "purple.200", children: "Create your account" }),
-              /* @__PURE__ */ jsx8(ModalCloseButton, {}),
-              /* @__PURE__ */ jsx8(ModalContentProvider, { state, dispatch, children: /* @__PURE__ */ jsxs3(Form, { onSubmit: handleSubmit, children: [
-                /* @__PURE__ */ jsx8(ModalBody, { pb: 6, children: /* @__PURE__ */ jsxs3(ModalPanel, { children: [
-                  /* @__PURE__ */ jsx8(ModalPanel.Label, { labelProps: "Email" }),
-                  /* @__PURE__ */ jsx8(ModalPanel.Input, { inputType: "email", refer: userEmailRef }),
-                  /* @__PURE__ */ jsx8(ModalPanel.Label, { labelProps: "Password" }),
-                  /* @__PURE__ */ jsx8(
-                    ModalPanel.Input,
-                    {
-                      inputType: "password",
-                      refer: userPasswordRef
-                    }
-                  )
-                ] }) }),
-                /* @__PURE__ */ jsxs3(ModalFooter, { children: [
-                  /* @__PURE__ */ jsx8(Button2, { bg: "green.200", mr: 3, children: "Save" }),
-                  /* @__PURE__ */ jsx8(Button2, { onClick: onClose, children: "Cancel" })
-                ] })
-              ] }) })
-            ]
-          }
-        )
-      ]
-    }
-  ) });
+// components/Panels/Modal/state/ModalContentProvider.tsx
+import { jsx as jsx8 } from "react/jsx-runtime";
+var initialState2 = {
+  errorMessages: { inputType: "" },
+  isTyping: false,
+  labelProps: "Label",
+  multipleLabels: ["Email", "Password"],
+  inputType: null,
+  multipleInputs: ["mail", "password"],
+  test: "test"
+};
+var ModalContentProvider = ({
+  children
+}) => {
+  const [state, dispatch] = useReducer(ModalReducer, initialState2);
+  const modalValue = useMemo(
+    () => ({
+      state,
+      dispatch
+    }),
+    [state, dispatch]
+  );
+  return /* @__PURE__ */ jsx8(ModalContext_default.Provider, { value: modalValue, children });
 };
 
 // components/Panels/MainMenu.tsx
@@ -431,7 +443,7 @@ var MainMenu = () => {
       justifyContent: "right",
       gap: "4",
       children: [
-        /* @__PURE__ */ jsx9(InitialFocus, { registerInit }),
+        /* @__PURE__ */ jsx9(ModalContentProvider, { children: /* @__PURE__ */ jsx9(InitialFocus, { registerInit }) }),
         buttons.map(
           (_a, i) => {
             var _b = _a, { text, render, onClick, hasUserName, commonStyles: commonStyles2 } = _b, rest = __objRest(_b, ["text", "render", "onClick", "hasUserName", "commonStyles"]);

@@ -5,7 +5,8 @@ import { RootState } from "../../store/store";
 import { userLogin } from "../../store/userInfoSlice";
 import { buttonsPanel } from "./LoginButtons";
 import { UserStatusStatus } from "../../const/const";
-import { InitialFocus } from "./Modal";
+import { InitialFocus } from "./Modal/Modal";
+import { ModalContentProvider } from "./Modal/state/ModalContentProvider";
 
 export const MainMenu = () => {
 	const [registerInit, setRegisterInit] = useState(false);
@@ -31,7 +32,9 @@ export const MainMenu = () => {
 				justifyContent="right"
 				gap="4"
 			>
-				<InitialFocus registerInit={registerInit} />
+				<ModalContentProvider>
+					<InitialFocus registerInit={registerInit} />
+				</ModalContentProvider>
 
 				{buttons.map(
 					({ text, render, onClick, hasUserName, commonStyles, ...rest }, i) =>
