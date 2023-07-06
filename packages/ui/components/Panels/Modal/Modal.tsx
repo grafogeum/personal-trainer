@@ -21,6 +21,7 @@ type FormErrors = {
 	email?: string;
 	password?: string;
 };
+interface Person extends yup.InferType<typeof personSchema> {}
 
 const personSchema = yup.object({
 	email: yup
@@ -36,8 +37,6 @@ const personSchema = yup.object({
 		.max(40, "Password is to long")
 		.required("Password is required"),
 });
-
-interface Person extends yup.InferType<typeof personSchema> {}
 
 const validateHelper = async (formData: Record<string, string>) => {
 	await personSchema.validate(formData, { abortEarly: false });
@@ -122,9 +121,14 @@ export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
 						<ModalBody pb={6}>
 							<ModalPanel>
 								<ModalPanel.Label labelProps={"Email"} />
-								<ModalPanel.Input inputType={"email"} refer={userEmailRef} />
+								<ModalPanel.Input
+									panelName={"registration"}
+									inputType={"email"}
+									refer={userEmailRef}
+								/>
 								<ModalPanel.Label labelProps={"Password"} />
 								<ModalPanel.Input
+									panelName={"registration"}
 									inputType={"password"}
 									refer={userPasswordRef}
 								/>

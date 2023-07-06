@@ -55,7 +55,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 
 // components/Panels/MainMenu.tsx
-import { useState as useState3 } from "react";
+import { useState as useState5 } from "react";
 import { Menu, Button as Button3, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -117,19 +117,19 @@ var buttonsPanel = (userStatus, dispatch, onClick) => [
     rightIcon: userStatus ? /* @__PURE__ */ jsx2(User, { w: 8, h: 8, color: "purple.700" }) : void 0,
     commonStyles,
     hasUserName: userStatus ? true : false,
-    render: true
+    shouldDisplay: true
   },
   {
     text: "REGISTER" /* REGISTER */,
     onClick,
     commonStyles,
-    render: !userStatus
+    shouldDisplay: !userStatus
   },
   {
     text: "LOG OUT" /* LOGOUT */,
     onClick,
     commonStyles,
-    render: userStatus
+    shouldDisplay: userStatus
   }
 ];
 
@@ -156,7 +156,8 @@ import { createContext } from "react";
 var ModalContext = createContext({
   state: {
     isTyping: false,
-    errorMessages: {}
+    errorMessages: {},
+    test: "empty String"
   },
   dispatch: (arg) => {
   }
@@ -185,10 +186,12 @@ var Label = ({ labelProps }) => {
 
 // components/Panels/Modal/ModalInput.tsx
 import { Input, Text } from "@chakra-ui/react";
-import { useContext as useContext2, useEffect, useState } from "react";
+import { useContext as useContext2, useEffect } from "react";
+import { useLocalStorage } from "usehooks-ts";
 import { Fragment as Fragment2, jsx as jsx4, jsxs } from "react/jsx-runtime";
 var FormInput = ({
   inputType = "",
+  panelName = "",
   refer
 }) => {
   const {
@@ -196,9 +199,12 @@ var FormInput = ({
     dispatch
   } = useContext2(ModalContext_default);
   const errorText = inputType && inputType in errorMessages ? errorMessages[inputType] : "";
-  const [inputField, setInputField] = useState({
+  const [inputField, setInputField] = useLocalStorage(panelName, {
     [inputType]: ""
   });
+  useEffect(() => {
+    console.log("panelNameINPUT", panelName);
+  }, []);
   const borderColor = !errorMessages[inputType] ? "purple.200" : "red.800";
   const inputStyle = {
     margin: "0.25rem ",
@@ -237,7 +243,7 @@ var FormInput = ({
         id: inputType,
         ref: refer,
         type: inputType,
-        value: inputField[inputType],
+        value: inputField[inputType] || "",
         placeholder: inputType,
         onChange: (e) => handleInputChange(e, inputType),
         focusBorderColor: "red.300",
@@ -351,11 +357,19 @@ var InitialFocus = ({ registerInit }) => {
               /* @__PURE__ */ jsxs3(Form, { onSubmit: handleSubmit, children: [
                 /* @__PURE__ */ jsx7(ModalBody, { pb: 6, children: /* @__PURE__ */ jsxs3(ModalPanel, { children: [
                   /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: "Email" }),
-                  /* @__PURE__ */ jsx7(ModalPanel.Input, { inputType: "email", refer: userEmailRef }),
+                  /* @__PURE__ */ jsx7(
+                    ModalPanel.Input,
+                    {
+                      panelName: "registration",
+                      inputType: "email",
+                      refer: userEmailRef
+                    }
+                  ),
                   /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: "Password" }),
                   /* @__PURE__ */ jsx7(
                     ModalPanel.Input,
                     {
+                      panelName: "registration",
                       inputType: "password",
                       refer: userPasswordRef
                     }
@@ -385,6 +399,10 @@ var ModalReducer = (state, action) => {
         isTyping: action.payload
       });
     case "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */:
+      return __spreadProps(__spreadValues({}, state), {
+        errorMessages: action.payload
+      });
+    case "SET_TEST" /* SET_TEST */:
       return __spreadProps(__spreadValues({}, state), {
         errorMessages: action.payload
       });
@@ -418,10 +436,54 @@ var ModalContentProvider = ({
   return /* @__PURE__ */ jsx8(ModalContext_default.Provider, { value: modalValue, children });
 };
 
+// components/Panels/Footer/Footer.tsx
+import { Fragment as Fragment6, useContext as useContext5, useEffect as useEffect4, useState as useState4 } from "react";
+
+// components/Atoms/Notifications/Notifications.tsx
+import { useEffect as useEffect3 } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Fragment as Fragment5, jsx as jsx9 } from "react/jsx-runtime";
+var Notifications = ({ notifText }) => {
+  if (!notifText)
+    return null;
+  notifText && (notifText = notifText.trim().toLocaleUpperCase());
+  useEffect3(() => {
+    let timeoutId = null;
+    const notify = () => notifText && toast(`${notifText}`, {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      className: "foo-bar"
+    });
+    timeoutId = setTimeout(notify, 400);
+    return () => {
+      timeoutId && clearTimeout(timeoutId);
+    };
+  }, [notifText]);
+  return /* @__PURE__ */ jsx9(Fragment5, { children: /* @__PURE__ */ jsx9(ToastContainer, { theme: "dark" }) });
+};
+
+// components/Panels/Footer/Footer.tsx
+import { Fragment as Fragment7, jsx as jsx10, jsxs as jsxs4 } from "react/jsx-runtime";
+var Footer = () => {
+  const {
+    state: { errorMessages },
+    dispatch
+  } = useContext5(ModalContext_default);
+  const [inputText, inputTextSet] = useState4([]);
+  useEffect4(() => {
+    inputTextSet(Object.values(errorMessages));
+  }, [errorMessages]);
+  return /* @__PURE__ */ jsxs4(Fragment7, { children: [
+    "Hello Footer",
+    inputText.map((notification) => /* @__PURE__ */ jsx10(Fragment6, { children: /* @__PURE__ */ jsx10(Notifications, { notifText: notification }) }, notification))
+  ] });
+};
+
 // components/Panels/MainMenu.tsx
-import { jsx as jsx9, jsxs as jsxs4 } from "react/jsx-runtime";
+import "react-toastify/dist/ReactToastify.css";
+import { Fragment as Fragment8, jsx as jsx11, jsxs as jsxs5 } from "react/jsx-runtime";
 var MainMenu = () => {
-  const [registerInit, setRegisterInit] = useState3(false);
+  const [registerInit, setRegisterInit] = useState5(false);
   const { userStatus, userName } = useSelector(
     (state) => state.userStatus
   );
@@ -435,39 +497,53 @@ var MainMenu = () => {
     }
   ];
   const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
-  return /* @__PURE__ */ jsx9(Menu, { children: /* @__PURE__ */ jsxs4(
-    Flex,
-    {
-      minWidth: "max-content",
-      alignItems: "center",
-      justifyContent: "right",
-      gap: "4",
-      children: [
-        /* @__PURE__ */ jsx9(ModalContentProvider, { children: /* @__PURE__ */ jsx9(InitialFocus, { registerInit }) }),
-        buttons.map(
-          (_a, i) => {
-            var _b = _a, { text, render, onClick, hasUserName, commonStyles: commonStyles2 } = _b, rest = __objRest(_b, ["text", "render", "onClick", "hasUserName", "commonStyles"]);
-            return render && /* @__PURE__ */ jsxs4(
-              Button3,
-              __spreadProps(__spreadValues(__spreadValues({}, rest), commonStyles2), {
-                onClick: () => {
-                  if (Array.isArray(onClick)) {
-                    onClick[i]();
-                  }
-                },
-                children: [
-                  hasUserName && (userName == null ? void 0 : userName.toUpperCase()),
-                  ` `,
-                  text
-                ]
-              }),
-              text
-            );
-          }
-        )
-      ]
-    }
-  ) });
+  return /* @__PURE__ */ jsx11(Fragment8, { children: /* @__PURE__ */ jsxs5(ModalContentProvider, { children: [
+    /* @__PURE__ */ jsx11(Menu, { children: /* @__PURE__ */ jsxs5(
+      Flex,
+      {
+        minWidth: "max-content",
+        alignItems: "center",
+        justifyContent: "right",
+        gap: "4",
+        children: [
+          /* @__PURE__ */ jsx11(InitialFocus, { registerInit }),
+          buttons.map(
+            (_a, i) => {
+              var _b = _a, {
+                text,
+                shouldDisplay,
+                onClick,
+                hasUserName,
+                commonStyles: commonStyles2
+              } = _b, rest = __objRest(_b, [
+                "text",
+                "shouldDisplay",
+                "onClick",
+                "hasUserName",
+                "commonStyles"
+              ]);
+              return shouldDisplay && /* @__PURE__ */ jsxs5(
+                Button3,
+                __spreadProps(__spreadValues(__spreadValues({}, rest), commonStyles2), {
+                  onClick: () => {
+                    if (Array.isArray(onClick)) {
+                      onClick[i]();
+                    }
+                  },
+                  children: [
+                    hasUserName && (userName == null ? void 0 : userName.toUpperCase()),
+                    text
+                  ]
+                }),
+                text
+              );
+            }
+          )
+        ]
+      }
+    ) }),
+    /* @__PURE__ */ jsx11(Footer, {})
+  ] }) });
 };
 
 // store/store.ts
@@ -480,7 +556,7 @@ var store = configureStore({
 
 // layout/MainMenuPanel.tsx
 import { Provider } from "react-redux";
-import { jsx as jsx10, jsxs as jsxs5 } from "react/jsx-runtime";
+import { jsx as jsx12, jsxs as jsxs6 } from "react/jsx-runtime";
 var Container = styled.div`
 	background-color: #0e0d0d;
 	height: 100%;
@@ -495,12 +571,12 @@ var Title = styled.h2`
 var MainMenuPanel = ({
   title,
   children
-}) => /* @__PURE__ */ jsx10(Provider, { store, children: /* @__PURE__ */ jsx10(ChakraProvider, { children: /* @__PURE__ */ jsxs5(Container, { children: [
-  /* @__PURE__ */ jsxs5(Title, { children: [
+}) => /* @__PURE__ */ jsx12(Provider, { store, children: /* @__PURE__ */ jsx12(ChakraProvider, { children: /* @__PURE__ */ jsxs6(Container, { children: [
+  /* @__PURE__ */ jsxs6(Title, { children: [
     "Title: ",
     title
   ] }),
-  /* @__PURE__ */ jsx10(MainMenu, {}),
+  /* @__PURE__ */ jsx12(MainMenu, {}),
   children
 ] }) }) });
 export {

@@ -1,6 +1,5 @@
 import { FormControl, Input } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import { FormInput } from "../Panels/Modal/ModalInput";
 
 export const Form = ({
 	children,

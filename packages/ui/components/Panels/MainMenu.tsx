@@ -7,6 +7,10 @@ import { buttonsPanel } from "./LoginButtons";
 import { UserStatusStatus } from "../../const/const";
 import { InitialFocus } from "./Modal/Modal";
 import { ModalContentProvider } from "./Modal/state/ModalContentProvider";
+import { Footer } from "./Footer/Footer";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const MainMenu = () => {
 	const [registerInit, setRegisterInit] = useState(false);
@@ -25,37 +29,49 @@ export const MainMenu = () => {
 	const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
 
 	return (
-		<Menu>
-			<Flex
-				minWidth="max-content"
-				alignItems="center"
-				justifyContent="right"
-				gap="4"
-			>
-				<ModalContentProvider>
-					<InitialFocus registerInit={registerInit} />
-				</ModalContentProvider>
+		<>
+			<ModalContentProvider>
+				<Menu>
+					<Flex
+						minWidth="max-content"
+						alignItems="center"
+						justifyContent="right"
+						gap="4"
+					>
+						<InitialFocus registerInit={registerInit} />
 
-				{buttons.map(
-					({ text, render, onClick, hasUserName, commonStyles, ...rest }, i) =>
-						render && (
-							<Button
-								key={text}
-								{...rest}
-								{...commonStyles}
-								onClick={() => {
-									if (Array.isArray(onClick)) {
-										onClick[i]();
-									}
-								}}
-							>
-								{hasUserName && userName?.toUpperCase()}
-								{` `}
-								{text}
-							</Button>
-						)
-				)}
-			</Flex>
-		</Menu>
+						{buttons.map(
+							(
+								{
+									text,
+									shouldDisplay,
+									onClick,
+									hasUserName,
+									commonStyles,
+									...rest
+								},
+								i
+							) =>
+								shouldDisplay && (
+									<Button
+										key={text}
+										{...rest}
+										{...commonStyles}
+										onClick={() => {
+											if (Array.isArray(onClick)) {
+												onClick[i]();
+											}
+										}}
+									>
+										{hasUserName && userName?.toUpperCase()}
+										{text}
+									</Button>
+								)
+						)}
+					</Flex>
+				</Menu>
+				<Footer />
+			</ModalContentProvider>
+		</>
 	);
 };

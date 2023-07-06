@@ -5,6 +5,7 @@ const ModalContext = createContext({
 	state: {
 		isTyping: false,
 		errorMessages: {},
+		test: "empty String",
 	},
 	dispatch: (arg: Action) => {},
 });
