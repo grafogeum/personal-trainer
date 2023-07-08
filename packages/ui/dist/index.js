@@ -295,21 +295,23 @@ var Form = ({
   children,
   onSubmit
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("form", { onSubmit, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.FormControl, { id: "", mt: 4, isRequired: true, children }),
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.Input, { type: "submit" })
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.FormControl, { id: "", mt: 4, isRequired: true, children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("form", { onSubmit, children }) });
 };
 
 // components/Panels/Modal/Modal.tsx
+var yup2 = __toESM(require("yup"));
+
+// components/Panels/Modal/state/Schemas.ts
 var yup = __toESM(require("yup"));
-var import_jsx_runtime7 = require("react/jsx-runtime");
-var personSchema = yup.object({
+var registerSchema = yup.object({
   email: yup.string().default("mail@domain.com").nullable("Email is invalid").email("Email is invalid").matches(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/, "Email is invalid").required("Email is required"),
   password: yup.string().min(8, "Password is to short").max(40, "Password is to long").required("Password is required")
 });
+
+// components/Panels/Modal/Modal.tsx
+var import_jsx_runtime7 = require("react/jsx-runtime");
 var validateHelper = (formData) => __async(void 0, null, function* () {
-  yield personSchema.validate(formData, { abortEarly: false });
+  yield registerSchema.validate(formData, { abortEarly: false });
 });
 var InitialFocus = ({ registerInit }) => {
   var _a, _b, _c, _d;
@@ -340,7 +342,7 @@ var InitialFocus = ({ registerInit }) => {
       yield validateHelper(formData2);
       dispatch(errorDispatch);
     } catch (error) {
-      if (error instanceof yup.ValidationError) {
+      if (error instanceof yup2.ValidationError) {
         const errors = {};
         error.inner.forEach((err) => {
           errors[err.path] = err.message;
@@ -402,7 +404,7 @@ var InitialFocus = ({ registerInit }) => {
                   )
                 ] }) }),
                 /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react8.ModalFooter, { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { bg: "green.200", mr: 3, children: "Save" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { bg: "green.200", mr: 3, type: "submit", children: "Save" }),
                   /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { onClick: onClose, children: "Cancel" })
                 ] })
               ] })
@@ -499,14 +501,10 @@ var Footer = () => {
   (0, import_react12.useEffect)(() => {
     inputTextSet(Object.values(errorMessages));
   }, [errorMessages]);
-  return /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(import_jsx_runtime10.Fragment, { children: [
-    "Hello Footer",
-    inputText.map((notification) => /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(import_react12.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Notifications, { notifText: notification }) }, notification))
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(import_jsx_runtime10.Fragment, { children: inputText.map((notification) => /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(import_react12.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Notifications, { notifText: notification }) }, notification)) });
 };
 
 // components/Panels/MainMenu.tsx
-var import_ReactToastify2 = require("react-toastify/dist/ReactToastify.css");
 var import_jsx_runtime11 = require("react/jsx-runtime");
 var MainMenu = () => {
   const [registerInit, setRegisterInit] = (0, import_react13.useState)(false);

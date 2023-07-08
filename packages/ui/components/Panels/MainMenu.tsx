@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, Button, Flex, useDisclosure } from "@chakra-ui/react";
+import { Menu, Button, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { userLogin } from "../../store/userInfoSlice";
@@ -8,9 +8,6 @@ import { UserStatusStatus } from "../../const/const";
 import { InitialFocus } from "./Modal/Modal";
 import { ModalContentProvider } from "./Modal/state/ModalContentProvider";
 import { Footer } from "./Footer/Footer";
-
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 export const MainMenu = () => {
 	const [registerInit, setRegisterInit] = useState(false);

@@ -16,30 +16,15 @@ import ModalContext from "./state/ModalContext";
 import { Form } from "../../Atoms/Form";
 import * as yup from "yup";
 import { SetErrorMessagesAction } from "./state/ModalReducer";
+import { registerSchema } from "./state/Schemas";
 
 type FormErrors = {
 	email?: string;
 	password?: string;
 };
-interface Person extends yup.InferType<typeof personSchema> {}
-
-const personSchema = yup.object({
-	email: yup
-		.string()
-		.default("mail@domain.com")
-		.nullable("Email is invalid")
-		.email("Email is invalid")
-		.matches(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/, "Email is invalid")
-		.required("Email is required"),
-	password: yup
-		.string()
-		.min(8, "Password is to short")
-		.max(40, "Password is to long")
-		.required("Password is required"),
-});
 
 const validateHelper = async (formData: Record<string, string>) => {
-	await personSchema.validate(formData, { abortEarly: false });
+	await registerSchema.validate(formData, { abortEarly: false });
 };
 
 export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
@@ -135,7 +120,7 @@ export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
 							</ModalPanel>
 						</ModalBody>
 						<ModalFooter>
-							<Button bg="green.200" mr={3}>
+							<Button bg="green.200" mr={3} type="submit">
 								Save
 							</Button>
 							<Button onClick={onClose}>Cancel</Button>

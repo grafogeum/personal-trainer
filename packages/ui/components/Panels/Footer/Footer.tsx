@@ -16,8 +16,6 @@ export const Footer = () => {
 
 	return (
 		<>
-			Hello Footer
-			{/* <Notifications notifText={"Hello Footer"} /> */}
 			{inputText.map((notification: string) => (
 				<Fragment key={notification}>
 					<Notifications notifText={notification} />
