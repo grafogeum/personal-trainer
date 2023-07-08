@@ -180,7 +180,8 @@ var ModalContext = (0, import_react2.createContext)({
   state: {
     isTyping: false,
     errorMessages: {},
-    test: "empty String"
+    test: "empty String",
+    multipleLabels: [""]
   },
   dispatch: (arg) => {
   }
@@ -196,7 +197,9 @@ var LabelStyle = {
   paddingLeft: "5px"
 };
 var Label = ({ labelProps }) => {
-  const { multipleLabels } = (0, import_react4.useContext)(ModalContext_default);
+  const {
+    state: { multipleLabels }
+  } = (0, import_react4.useContext)(ModalContext_default);
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_jsx_runtime3.Fragment, { children: labelProps ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
     import_react3.FormLabel,
     {
@@ -293,7 +296,7 @@ var Form = ({
   onSubmit
 }) => {
   return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("form", { onSubmit, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.FormControl, { mt: 4, isRequired: true, children }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.FormControl, { id: "", mt: 4, isRequired: true, children }),
     /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.Input, { type: "submit" })
   ] });
 };
@@ -475,7 +478,7 @@ var Notifications = ({ notifText }) => {
     let timeoutId = null;
     const notify = () => notifText && (0, import_react_toastify.toast)(`${notifText}`, {
       position: import_react_toastify.toast.POSITION.BOTTOM_RIGHT,
-      className: "foo-bar"
+      className: ` notif-${notifText.slice(0, 10).toLowerCase()}`
     });
     timeoutId = setTimeout(notify, 400);
     return () => {

@@ -1,7 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ModalContext from "../../Panels/Modal/state/ModalContext";
 
 export const Notifications = ({ notifText }: { notifText?: string }) => {
 	if (!notifText) return null;
@@ -14,7 +13,7 @@ export const Notifications = ({ notifText }: { notifText?: string }) => {
 			notifText &&
 			toast(`${notifText}`, {
 				position: toast.POSITION.BOTTOM_RIGHT,
-				className: "foo-bar",
+				className: ` notif-${notifText.slice(0, 10).toLowerCase()}`,
 			});
 
 		timeoutId = setTimeout(notify, 400);

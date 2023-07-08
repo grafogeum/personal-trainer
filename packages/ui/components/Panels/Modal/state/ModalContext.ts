@@ -6,6 +6,7 @@ const ModalContext = createContext({
 		isTyping: false,
 		errorMessages: {},
 		test: "empty String",
+		multipleLabels: [""],
 	},
 	dispatch: (arg: Action) => {},
 });

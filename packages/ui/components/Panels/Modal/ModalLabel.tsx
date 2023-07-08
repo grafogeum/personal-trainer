@@ -10,7 +10,9 @@ const LabelStyle = {
 } as React.CSSProperties;
 
 export const Label = ({ labelProps }: { labelProps?: string }) => {
-	const { multipleLabels } = useContext(ModalContext);
+	const {
+		state: { multipleLabels },
+	} = useContext(ModalContext);
 	return (
 		<>
 			{labelProps ? (

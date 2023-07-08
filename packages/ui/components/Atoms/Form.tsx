@@ -10,7 +10,7 @@ export const Form = ({
 }) => {
 	return (
 		<form onSubmit={onSubmit}>
-			<FormControl mt={4} isRequired>
+			<FormControl id={""} mt={4} isRequired>
 				{children}
 			</FormControl>
 			<Input type="submit" />

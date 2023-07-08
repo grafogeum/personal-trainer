@@ -55,7 +55,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 
 // components/Panels/MainMenu.tsx
-import { useState as useState5 } from "react";
+import { useState as useState4 } from "react";
 import { Menu, Button as Button3, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -157,7 +157,8 @@ var ModalContext = createContext({
   state: {
     isTyping: false,
     errorMessages: {},
-    test: "empty String"
+    test: "empty String",
+    multipleLabels: [""]
   },
   dispatch: (arg) => {
   }
@@ -173,7 +174,9 @@ var LabelStyle = {
   paddingLeft: "5px"
 };
 var Label = ({ labelProps }) => {
-  const { multipleLabels } = useContext(ModalContext_default);
+  const {
+    state: { multipleLabels }
+  } = useContext(ModalContext_default);
   return /* @__PURE__ */ jsx3(Fragment, { children: labelProps ? /* @__PURE__ */ jsx3(
     FormLabel,
     {
@@ -270,7 +273,7 @@ var Form = ({
   onSubmit
 }) => {
   return /* @__PURE__ */ jsxs2("form", { onSubmit, children: [
-    /* @__PURE__ */ jsx6(FormControl, { mt: 4, isRequired: true, children }),
+    /* @__PURE__ */ jsx6(FormControl, { id: "", mt: 4, isRequired: true, children }),
     /* @__PURE__ */ jsx6(Input2, { type: "submit" })
   ] });
 };
@@ -437,7 +440,7 @@ var ModalContentProvider = ({
 };
 
 // components/Panels/Footer/Footer.tsx
-import { Fragment as Fragment6, useContext as useContext5, useEffect as useEffect4, useState as useState4 } from "react";
+import { Fragment as Fragment6, useContext as useContext4, useEffect as useEffect4, useState as useState3 } from "react";
 
 // components/Atoms/Notifications/Notifications.tsx
 import { useEffect as useEffect3 } from "react";
@@ -452,7 +455,7 @@ var Notifications = ({ notifText }) => {
     let timeoutId = null;
     const notify = () => notifText && toast(`${notifText}`, {
       position: toast.POSITION.BOTTOM_RIGHT,
-      className: "foo-bar"
+      className: ` notif-${notifText.slice(0, 10).toLowerCase()}`
     });
     timeoutId = setTimeout(notify, 400);
     return () => {
@@ -468,8 +471,8 @@ var Footer = () => {
   const {
     state: { errorMessages },
     dispatch
-  } = useContext5(ModalContext_default);
-  const [inputText, inputTextSet] = useState4([]);
+  } = useContext4(ModalContext_default);
+  const [inputText, inputTextSet] = useState3([]);
   useEffect4(() => {
     inputTextSet(Object.values(errorMessages));
   }, [errorMessages]);
@@ -483,7 +486,7 @@ var Footer = () => {
 import "react-toastify/dist/ReactToastify.css";
 import { Fragment as Fragment8, jsx as jsx11, jsxs as jsxs5 } from "react/jsx-runtime";
 var MainMenu = () => {
-  const [registerInit, setRegisterInit] = useState5(false);
+  const [registerInit, setRegisterInit] = useState4(false);
   const { userStatus, userName } = useSelector(
     (state) => state.userStatus
   );
