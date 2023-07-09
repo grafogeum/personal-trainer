@@ -9,7 +9,7 @@ import {
 	Button,
 	useDisclosure,
 } from "@chakra-ui/react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { ModalActionTypes } from "./state/ModalActions";
 import { ModalPanel } from "./ModalPanel";
 import ModalContext from "./state/ModalContext";
@@ -27,10 +27,17 @@ const validateHelper = async (formData: Record<string, string>) => {
 	await registerSchema.validate(formData, { abortEarly: false });
 };
 
-export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
+export const UserLoginPanel = ({
+	userLoginType,
+}: {
+	userLoginType: {
+		type: "login" | "register";
+		state: boolean;
+	};
+}) => {
+	console.log("userLoginType", userLoginType);
 	const [initialized, setInitialized] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
-
 	const [validationAttempt, setValidationAttempt] = useState(0);
 
 	const {
@@ -40,7 +47,7 @@ export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
 
 	useEffect(() => {
 		initialized ? onOpen() : setInitialized(true);
-	}, [registerInit, registerInit]);
+	}, [userLoginType]);
 
 	const initialRef = useRef(null);
 	const finalRef = useRef(null);
@@ -86,6 +93,33 @@ export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
 		validationAttempt > 0 && validateAndDispatch(formData);
 	}, [isTyping, validationAttempt]);
 
+	const modalData = {
+		register: [
+			{
+				label: "Email",
+				inputType: "email",
+				refer: userEmailRef,
+			},
+			{
+				label: "Password",
+				inputType: "password",
+				refer: userPasswordRef,
+			},
+		],
+		login: [
+			{
+				label: "Email-Login",
+				inputType: "email",
+				refer: userEmailRef,
+			},
+			{
+				label: "Password-Login",
+				inputType: "password",
+				refer: userPasswordRef,
+			},
+		],
+	};
+
 	return (
 		<>
 			<Modal
@@ -104,20 +138,31 @@ export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
 					<ModalCloseButton />
 					<Form onSubmit={handleSubmit}>
 						<ModalBody pb={6}>
-							<ModalPanel>
-								<ModalPanel.Label labelProps={"Email"} />
-								<ModalPanel.Input
-									panelName={"registration"}
-									inputType={"email"}
-									refer={userEmailRef}
-								/>
-								<ModalPanel.Label labelProps={"Password"} />
-								<ModalPanel.Input
-									panelName={"registration"}
-									inputType={"password"}
-									refer={userPasswordRef}
-								/>
-							</ModalPanel>
+							{Object.keys(modalData).map((group) => (
+								<ModalPanel key={group}>
+									{group === userLoginType.type &&
+										modalData[group as keyof typeof modalData].map(
+											({
+												label,
+												inputType,
+												refer,
+											}: {
+												label: string;
+												inputType: string;
+												refer: React.RefObject<HTMLInputElement>;
+											}) => (
+												<Fragment key={label}>
+													<ModalPanel.Label labelProps={label} />
+													<ModalPanel.Input
+														panelName={group}
+														inputType={inputType}
+														refer={refer}
+													/>
+												</Fragment>
+											)
+										)}
+								</ModalPanel>
+							))}
 						</ModalBody>
 						<ModalFooter>
 							<Button bg="green.200" mr={3} type="submit">

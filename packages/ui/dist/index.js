@@ -228,9 +228,6 @@ var FormInput = ({
   const [inputField, setInputField] = (0, import_usehooks_ts.useLocalStorage)(panelName, {
     [inputType]: ""
   });
-  (0, import_react6.useEffect)(() => {
-    console.log("panelNameINPUT", panelName);
-  }, []);
   const borderColor = !errorMessages[inputType] ? "purple.200" : "red.800";
   const inputStyle = {
     margin: "0.25rem ",
@@ -313,8 +310,11 @@ var import_jsx_runtime7 = require("react/jsx-runtime");
 var validateHelper = (formData) => __async(void 0, null, function* () {
   yield registerSchema.validate(formData, { abortEarly: false });
 });
-var InitialFocus = ({ registerInit }) => {
+var UserLoginPanel = ({
+  userLoginType
+}) => {
   var _a, _b, _c, _d;
+  console.log("userLoginType", userLoginType);
   const [initialized, setInitialized] = (0, import_react9.useState)(false);
   const { isOpen, onOpen, onClose } = (0, import_react8.useDisclosure)();
   const [validationAttempt, setValidationAttempt] = (0, import_react9.useState)(0);
@@ -324,7 +324,7 @@ var InitialFocus = ({ registerInit }) => {
   } = (0, import_react9.useContext)(ModalContext_default);
   (0, import_react9.useEffect)(() => {
     initialized ? onOpen() : setInitialized(true);
-  }, [registerInit, registerInit]);
+  }, [userLoginType]);
   const initialRef = (0, import_react9.useRef)(null);
   const finalRef = (0, import_react9.useRef)(null);
   const userEmailRef = (0, import_react9.useRef)(null);
@@ -364,6 +364,32 @@ var InitialFocus = ({ registerInit }) => {
   (0, import_react9.useEffect)(() => {
     validationAttempt > 0 && validateAndDispatch(formData);
   }, [isTyping, validationAttempt]);
+  const modalData = {
+    register: [
+      {
+        label: "Email",
+        inputType: "email",
+        refer: userEmailRef
+      },
+      {
+        label: "Password",
+        inputType: "password",
+        refer: userPasswordRef
+      }
+    ],
+    login: [
+      {
+        label: "Email-Login",
+        inputType: "email",
+        refer: userEmailRef
+      },
+      {
+        label: "Password-Login",
+        inputType: "password",
+        refer: userPasswordRef
+      }
+    ]
+  };
   return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_jsx_runtime7.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     import_react8.Modal,
     {
@@ -383,26 +409,23 @@ var InitialFocus = ({ registerInit }) => {
               /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalHeader, { color: "purple.200", children: "Create your account" }),
               /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalCloseButton, {}),
               /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Form, { onSubmit: handleSubmit, children: [
-                /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalBody, { pb: 6, children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(ModalPanel, { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: "Email" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
-                    ModalPanel.Input,
-                    {
-                      panelName: "registration",
-                      inputType: "email",
-                      refer: userEmailRef
-                    }
-                  ),
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: "Password" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
-                    ModalPanel.Input,
-                    {
-                      panelName: "registration",
-                      inputType: "password",
-                      refer: userPasswordRef
-                    }
-                  )
-                ] }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalBody, { pb: 6, children: Object.keys(modalData).map((group) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel, { children: group === userLoginType.type && modalData[group].map(
+                  ({
+                    label,
+                    inputType,
+                    refer
+                  }) => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react9.Fragment, { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: label }),
+                    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+                      ModalPanel.Input,
+                      {
+                        panelName: group,
+                        inputType,
+                        refer
+                      }
+                    )
+                  ] }, label)
+                ) }, group)) }),
                 /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react8.ModalFooter, { children: [
                   /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { bg: "green.200", mr: 3, type: "submit", children: "Save" }),
                   /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { onClick: onClose, children: "Cancel" })
@@ -507,14 +530,30 @@ var Footer = () => {
 // components/Panels/MainMenu.tsx
 var import_jsx_runtime11 = require("react/jsx-runtime");
 var MainMenu = () => {
-  const [registerInit, setRegisterInit] = (0, import_react13.useState)(false);
+  const [userLoginType, setUserLoginType] = (0, import_react13.useState)({
+    type: "login",
+    state: false
+  });
+  const [registerInit, setRegisterInit] = (0, import_react13.useState)({
+    type: "register",
+    state: false
+  });
   const { userStatus, userName } = (0, import_react_redux.useSelector)(
     (state) => state.userStatus
   );
   const dispatch = (0, import_react_redux.useDispatch)();
   const buttonsHandlers = [
-    () => dispatch(userLogin()),
-    () => setRegisterInit(!registerInit),
+    () => {
+      dispatch(userLogin());
+      setUserLoginType({
+        type: "login",
+        state: !userLoginType.state
+      });
+    },
+    () => setRegisterInit({
+      type: "register",
+      state: !registerInit.state
+    }),
     () => {
       console.log("LOG OUT" /* LOGOUT */);
       dispatch(userLogin());
@@ -530,7 +569,12 @@ var MainMenu = () => {
         justifyContent: "right",
         gap: "4",
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(InitialFocus, { registerInit }),
+          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+            UserLoginPanel,
+            {
+              userLoginType: userLoginType.state ? userLoginType : registerInit
+            }
+          ),
           buttons.map(
             (_a, i) => {
               var _b = _a, {

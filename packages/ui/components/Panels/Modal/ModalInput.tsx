@@ -25,10 +25,6 @@ export const FormInput = ({
 		[inputType]: "",
 	});
 
-	useEffect(() => {
-		console.log("panelNameINPUT", panelName);
-	}, []);
-
 	const borderColor = !errorMessages[inputType as keyof typeof errorMessages]
 		? "purple.200"
 		: "red.800";

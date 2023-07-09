@@ -145,7 +145,7 @@ import {
   Button as Button2,
   useDisclosure
 } from "@chakra-ui/react";
-import { useContext as useContext3, useEffect as useEffect2, useRef, useState as useState2 } from "react";
+import { Fragment as Fragment4, useContext as useContext3, useEffect as useEffect2, useRef, useState as useState2 } from "react";
 
 // components/Panels/Modal/ModalLabel.tsx
 import { FormLabel } from "@chakra-ui/react";
@@ -205,9 +205,6 @@ var FormInput = ({
   const [inputField, setInputField] = useLocalStorage(panelName, {
     [inputType]: ""
   });
-  useEffect(() => {
-    console.log("panelNameINPUT", panelName);
-  }, []);
   const borderColor = !errorMessages[inputType] ? "purple.200" : "red.800";
   const inputStyle = {
     margin: "0.25rem ",
@@ -286,12 +283,15 @@ var registerSchema = yup.object({
 });
 
 // components/Panels/Modal/Modal.tsx
-import { Fragment as Fragment4, jsx as jsx7, jsxs as jsxs2 } from "react/jsx-runtime";
+import { Fragment as Fragment5, jsx as jsx7, jsxs as jsxs2 } from "react/jsx-runtime";
 var validateHelper = (formData) => __async(void 0, null, function* () {
   yield registerSchema.validate(formData, { abortEarly: false });
 });
-var InitialFocus = ({ registerInit }) => {
+var UserLoginPanel = ({
+  userLoginType
+}) => {
   var _a, _b, _c, _d;
+  console.log("userLoginType", userLoginType);
   const [initialized, setInitialized] = useState2(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [validationAttempt, setValidationAttempt] = useState2(0);
@@ -301,7 +301,7 @@ var InitialFocus = ({ registerInit }) => {
   } = useContext3(ModalContext_default);
   useEffect2(() => {
     initialized ? onOpen() : setInitialized(true);
-  }, [registerInit, registerInit]);
+  }, [userLoginType]);
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const userEmailRef = useRef(null);
@@ -341,7 +341,33 @@ var InitialFocus = ({ registerInit }) => {
   useEffect2(() => {
     validationAttempt > 0 && validateAndDispatch(formData);
   }, [isTyping, validationAttempt]);
-  return /* @__PURE__ */ jsx7(Fragment4, { children: /* @__PURE__ */ jsxs2(
+  const modalData = {
+    register: [
+      {
+        label: "Email",
+        inputType: "email",
+        refer: userEmailRef
+      },
+      {
+        label: "Password",
+        inputType: "password",
+        refer: userPasswordRef
+      }
+    ],
+    login: [
+      {
+        label: "Email-Login",
+        inputType: "email",
+        refer: userEmailRef
+      },
+      {
+        label: "Password-Login",
+        inputType: "password",
+        refer: userPasswordRef
+      }
+    ]
+  };
+  return /* @__PURE__ */ jsx7(Fragment5, { children: /* @__PURE__ */ jsxs2(
     Modal,
     {
       initialFocusRef: initialRef,
@@ -360,26 +386,23 @@ var InitialFocus = ({ registerInit }) => {
               /* @__PURE__ */ jsx7(ModalHeader, { color: "purple.200", children: "Create your account" }),
               /* @__PURE__ */ jsx7(ModalCloseButton, {}),
               /* @__PURE__ */ jsxs2(Form, { onSubmit: handleSubmit, children: [
-                /* @__PURE__ */ jsx7(ModalBody, { pb: 6, children: /* @__PURE__ */ jsxs2(ModalPanel, { children: [
-                  /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: "Email" }),
-                  /* @__PURE__ */ jsx7(
-                    ModalPanel.Input,
-                    {
-                      panelName: "registration",
-                      inputType: "email",
-                      refer: userEmailRef
-                    }
-                  ),
-                  /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: "Password" }),
-                  /* @__PURE__ */ jsx7(
-                    ModalPanel.Input,
-                    {
-                      panelName: "registration",
-                      inputType: "password",
-                      refer: userPasswordRef
-                    }
-                  )
-                ] }) }),
+                /* @__PURE__ */ jsx7(ModalBody, { pb: 6, children: Object.keys(modalData).map((group) => /* @__PURE__ */ jsx7(ModalPanel, { children: group === userLoginType.type && modalData[group].map(
+                  ({
+                    label,
+                    inputType,
+                    refer
+                  }) => /* @__PURE__ */ jsxs2(Fragment4, { children: [
+                    /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: label }),
+                    /* @__PURE__ */ jsx7(
+                      ModalPanel.Input,
+                      {
+                        panelName: group,
+                        inputType,
+                        refer
+                      }
+                    )
+                  ] }, label)
+                ) }, group)) }),
                 /* @__PURE__ */ jsxs2(ModalFooter, { children: [
                   /* @__PURE__ */ jsx7(Button2, { bg: "green.200", mr: 3, type: "submit", children: "Save" }),
                   /* @__PURE__ */ jsx7(Button2, { onClick: onClose, children: "Cancel" })
@@ -442,13 +465,13 @@ var ModalContentProvider = ({
 };
 
 // components/Panels/Footer/Footer.tsx
-import { Fragment as Fragment6, useContext as useContext4, useEffect as useEffect4, useState as useState3 } from "react";
+import { Fragment as Fragment7, useContext as useContext4, useEffect as useEffect4, useState as useState3 } from "react";
 
 // components/Atoms/Notifications/Notifications.tsx
 import { useEffect as useEffect3 } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Fragment as Fragment5, jsx as jsx9 } from "react/jsx-runtime";
+import { Fragment as Fragment6, jsx as jsx9 } from "react/jsx-runtime";
 var Notifications = ({ notifText }) => {
   if (!notifText)
     return null;
@@ -464,11 +487,11 @@ var Notifications = ({ notifText }) => {
       timeoutId && clearTimeout(timeoutId);
     };
   }, [notifText]);
-  return /* @__PURE__ */ jsx9(Fragment5, { children: /* @__PURE__ */ jsx9(ToastContainer, { theme: "dark" }) });
+  return /* @__PURE__ */ jsx9(Fragment6, { children: /* @__PURE__ */ jsx9(ToastContainer, { theme: "dark" }) });
 };
 
 // components/Panels/Footer/Footer.tsx
-import { Fragment as Fragment7, jsx as jsx10 } from "react/jsx-runtime";
+import { Fragment as Fragment8, jsx as jsx10 } from "react/jsx-runtime";
 var Footer = () => {
   const {
     state: { errorMessages },
@@ -478,27 +501,43 @@ var Footer = () => {
   useEffect4(() => {
     inputTextSet(Object.values(errorMessages));
   }, [errorMessages]);
-  return /* @__PURE__ */ jsx10(Fragment7, { children: inputText.map((notification) => /* @__PURE__ */ jsx10(Fragment6, { children: /* @__PURE__ */ jsx10(Notifications, { notifText: notification }) }, notification)) });
+  return /* @__PURE__ */ jsx10(Fragment8, { children: inputText.map((notification) => /* @__PURE__ */ jsx10(Fragment7, { children: /* @__PURE__ */ jsx10(Notifications, { notifText: notification }) }, notification)) });
 };
 
 // components/Panels/MainMenu.tsx
-import { Fragment as Fragment8, jsx as jsx11, jsxs as jsxs3 } from "react/jsx-runtime";
+import { Fragment as Fragment9, jsx as jsx11, jsxs as jsxs3 } from "react/jsx-runtime";
 var MainMenu = () => {
-  const [registerInit, setRegisterInit] = useState4(false);
+  const [userLoginType, setUserLoginType] = useState4({
+    type: "login",
+    state: false
+  });
+  const [registerInit, setRegisterInit] = useState4({
+    type: "register",
+    state: false
+  });
   const { userStatus, userName } = useSelector(
     (state) => state.userStatus
   );
   const dispatch = useDispatch();
   const buttonsHandlers = [
-    () => dispatch(userLogin()),
-    () => setRegisterInit(!registerInit),
+    () => {
+      dispatch(userLogin());
+      setUserLoginType({
+        type: "login",
+        state: !userLoginType.state
+      });
+    },
+    () => setRegisterInit({
+      type: "register",
+      state: !registerInit.state
+    }),
     () => {
       console.log("LOG OUT" /* LOGOUT */);
       dispatch(userLogin());
     }
   ];
   const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
-  return /* @__PURE__ */ jsx11(Fragment8, { children: /* @__PURE__ */ jsxs3(ModalContentProvider, { children: [
+  return /* @__PURE__ */ jsx11(Fragment9, { children: /* @__PURE__ */ jsxs3(ModalContentProvider, { children: [
     /* @__PURE__ */ jsx11(Menu, { children: /* @__PURE__ */ jsxs3(
       Flex,
       {
@@ -507,7 +546,12 @@ var MainMenu = () => {
         justifyContent: "right",
         gap: "4",
         children: [
-          /* @__PURE__ */ jsx11(InitialFocus, { registerInit }),
+          /* @__PURE__ */ jsx11(
+            UserLoginPanel,
+            {
+              userLoginType: userLoginType.state ? userLoginType : registerInit
+            }
+          ),
           buttons.map(
             (_a, i) => {
               var _b = _a, {
