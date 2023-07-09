@@ -20,7 +20,7 @@ type Button = {
 	rightIcon?: ButtonProps["rightIcon"];
 	hasUserName?: boolean;
 	commonStyles: ButtonProps;
-	render: boolean;
+	shouldDisplay: boolean;
 };
 
 export const buttonsPanel = (
@@ -35,18 +35,18 @@ export const buttonsPanel = (
 		rightIcon: userStatus ? <User w={8} h={8} color="purple.700" /> : undefined,
 		commonStyles,
 		hasUserName: userStatus ? true : false,
-		render: true,
+		shouldDisplay: true,
 	},
 	{
 		text: UserStatusStatus.REGISTER,
 		onClick,
 		commonStyles,
-		render: !userStatus,
+		shouldDisplay: !userStatus,
 	},
 	{
 		text: UserStatusStatus.LOGOUT,
 		onClick,
 		commonStyles,
-		render: userStatus,
+		shouldDisplay: userStatus,
 	},
 ];

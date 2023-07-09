@@ -84,12 +84,12 @@ __export(ui_exports, {
 module.exports = __toCommonJS(ui_exports);
 
 // layout/MainMenuPanel.tsx
-var import_react13 = require("@chakra-ui/react");
+var import_react15 = require("@chakra-ui/react");
 var import_styled = __toESM(require("@emotion/styled"));
 
 // components/Panels/MainMenu.tsx
-var import_react11 = require("react");
-var import_react12 = require("@chakra-ui/react");
+var import_react13 = require("react");
+var import_react14 = require("@chakra-ui/react");
 var import_react_redux = require("react-redux");
 
 // store/userInfoSlice.ts
@@ -150,19 +150,19 @@ var buttonsPanel = (userStatus, dispatch, onClick) => [
     rightIcon: userStatus ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(User, { w: 8, h: 8, color: "purple.700" }) : void 0,
     commonStyles,
     hasUserName: userStatus ? true : false,
-    render: true
+    shouldDisplay: true
   },
   {
     text: "REGISTER" /* REGISTER */,
     onClick,
     commonStyles,
-    render: !userStatus
+    shouldDisplay: !userStatus
   },
   {
     text: "LOG OUT" /* LOGOUT */,
     onClick,
     commonStyles,
-    render: userStatus
+    shouldDisplay: userStatus
   }
 ];
 
@@ -179,7 +179,9 @@ var import_react2 = require("react");
 var ModalContext = (0, import_react2.createContext)({
   state: {
     isTyping: false,
-    errorMessages: {}
+    errorMessages: {},
+    test: "empty String",
+    multipleLabels: [""]
   },
   dispatch: (arg) => {
   }
@@ -195,7 +197,9 @@ var LabelStyle = {
   paddingLeft: "5px"
 };
 var Label = ({ labelProps }) => {
-  const { multipleLabels } = (0, import_react4.useContext)(ModalContext_default);
+  const {
+    state: { multipleLabels }
+  } = (0, import_react4.useContext)(ModalContext_default);
   return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_jsx_runtime3.Fragment, { children: labelProps ? /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
     import_react3.FormLabel,
     {
@@ -209,9 +213,11 @@ var Label = ({ labelProps }) => {
 // components/Panels/Modal/ModalInput.tsx
 var import_react5 = require("@chakra-ui/react");
 var import_react6 = require("react");
+var import_usehooks_ts = require("usehooks-ts");
 var import_jsx_runtime4 = require("react/jsx-runtime");
 var FormInput = ({
   inputType = "",
+  panelName = "",
   refer
 }) => {
   const {
@@ -219,7 +225,7 @@ var FormInput = ({
     dispatch
   } = (0, import_react6.useContext)(ModalContext_default);
   const errorText = inputType && inputType in errorMessages ? errorMessages[inputType] : "";
-  const [inputField, setInputField] = (0, import_react6.useState)({
+  const [inputField, setInputField] = (0, import_usehooks_ts.useLocalStorage)(panelName, {
     [inputType]: ""
   });
   const borderColor = !errorMessages[inputType] ? "purple.200" : "red.800";
@@ -260,7 +266,7 @@ var FormInput = ({
         id: inputType,
         ref: refer,
         type: inputType,
-        value: inputField[inputType],
+        value: inputField[inputType] || "",
         placeholder: inputType,
         onChange: (e) => handleInputChange(e, inputType),
         focusBorderColor: "red.300",
@@ -286,24 +292,29 @@ var Form = ({
   children,
   onSubmit
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("form", { onSubmit, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.FormControl, { mt: 4, isRequired: true, children }),
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.Input, { type: "submit" })
-  ] });
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_react7.FormControl, { id: "", mt: 4, isRequired: true, children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("form", { onSubmit, children }) });
 };
 
 // components/Panels/Modal/Modal.tsx
+var yup2 = __toESM(require("yup"));
+
+// components/Panels/Modal/state/Schemas.ts
 var yup = __toESM(require("yup"));
-var import_jsx_runtime7 = require("react/jsx-runtime");
-var personSchema = yup.object({
+var registerSchema = yup.object({
   email: yup.string().default("mail@domain.com").nullable("Email is invalid").email("Email is invalid").matches(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/, "Email is invalid").required("Email is required"),
   password: yup.string().min(8, "Password is to short").max(40, "Password is to long").required("Password is required")
 });
+
+// components/Panels/Modal/Modal.tsx
+var import_jsx_runtime7 = require("react/jsx-runtime");
 var validateHelper = (formData) => __async(void 0, null, function* () {
-  yield personSchema.validate(formData, { abortEarly: false });
+  yield registerSchema.validate(formData, { abortEarly: false });
 });
-var InitialFocus = ({ registerInit }) => {
+var UserLoginPanel = ({
+  userLoginType
+}) => {
   var _a, _b, _c, _d;
+  console.log("userLoginType", userLoginType);
   const [initialized, setInitialized] = (0, import_react9.useState)(false);
   const { isOpen, onOpen, onClose } = (0, import_react8.useDisclosure)();
   const [validationAttempt, setValidationAttempt] = (0, import_react9.useState)(0);
@@ -313,7 +324,7 @@ var InitialFocus = ({ registerInit }) => {
   } = (0, import_react9.useContext)(ModalContext_default);
   (0, import_react9.useEffect)(() => {
     initialized ? onOpen() : setInitialized(true);
-  }, [registerInit, registerInit]);
+  }, [userLoginType]);
   const initialRef = (0, import_react9.useRef)(null);
   const finalRef = (0, import_react9.useRef)(null);
   const userEmailRef = (0, import_react9.useRef)(null);
@@ -331,7 +342,7 @@ var InitialFocus = ({ registerInit }) => {
       yield validateHelper(formData2);
       dispatch(errorDispatch);
     } catch (error) {
-      if (error instanceof yup.ValidationError) {
+      if (error instanceof yup2.ValidationError) {
         const errors = {};
         error.inner.forEach((err) => {
           errors[err.path] = err.message;
@@ -353,6 +364,32 @@ var InitialFocus = ({ registerInit }) => {
   (0, import_react9.useEffect)(() => {
     validationAttempt > 0 && validateAndDispatch(formData);
   }, [isTyping, validationAttempt]);
+  const modalData = {
+    register: [
+      {
+        label: "Email",
+        inputType: "email",
+        refer: userEmailRef
+      },
+      {
+        label: "Password",
+        inputType: "password",
+        refer: userPasswordRef
+      }
+    ],
+    login: [
+      {
+        label: "Email-Login",
+        inputType: "email",
+        refer: userEmailRef
+      },
+      {
+        label: "Password-Login",
+        inputType: "password",
+        refer: userPasswordRef
+      }
+    ]
+  };
   return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_jsx_runtime7.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     import_react8.Modal,
     {
@@ -372,20 +409,25 @@ var InitialFocus = ({ registerInit }) => {
               /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalHeader, { color: "purple.200", children: "Create your account" }),
               /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalCloseButton, {}),
               /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Form, { onSubmit: handleSubmit, children: [
-                /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalBody, { pb: 6, children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(ModalPanel, { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: "Email" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Input, { inputType: "email", refer: userEmailRef }),
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: "Password" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
-                    ModalPanel.Input,
-                    {
-                      inputType: "password",
-                      refer: userPasswordRef
-                    }
-                  )
-                ] }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalBody, { pb: 6, children: Object.keys(modalData).map((group) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel, { children: group === userLoginType.type && modalData[group].map(
+                  ({
+                    label,
+                    inputType,
+                    refer
+                  }) => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react9.Fragment, { children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: label }),
+                    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+                      ModalPanel.Input,
+                      {
+                        panelName: group,
+                        inputType,
+                        refer
+                      }
+                    )
+                  ] }, label)
+                ) }, group)) }),
                 /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react8.ModalFooter, { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { bg: "green.200", mr: 3, children: "Save" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { bg: "green.200", mr: 3, type: "submit", children: "Save" }),
                   /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { onClick: onClose, children: "Cancel" })
                 ] })
               ] })
@@ -408,6 +450,10 @@ var ModalReducer = (state, action) => {
         isTyping: action.payload
       });
     case "SET_ERROR_MESSAGES" /* SET_ERROR_MESSAGES */:
+      return __spreadProps(__spreadValues({}, state), {
+        errorMessages: action.payload
+      });
+    case "SET_TEST" /* SET_TEST */:
       return __spreadProps(__spreadValues({}, state), {
         errorMessages: action.payload
       });
@@ -441,56 +487,131 @@ var ModalContentProvider = ({
   return /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(ModalContext_default.Provider, { value: modalValue, children });
 };
 
-// components/Panels/MainMenu.tsx
+// components/Panels/Footer/Footer.tsx
+var import_react12 = require("react");
+
+// components/Atoms/Notifications/Notifications.tsx
+var import_react11 = require("react");
+var import_react_toastify = require("react-toastify");
+var import_ReactToastify = require("react-toastify/dist/ReactToastify.css");
 var import_jsx_runtime9 = require("react/jsx-runtime");
+var Notifications = ({ notifText }) => {
+  if (!notifText)
+    return null;
+  notifText && (notifText = notifText.trim().toLocaleUpperCase());
+  (0, import_react11.useEffect)(() => {
+    let timeoutId = null;
+    const notify = () => notifText && (0, import_react_toastify.toast)(`${notifText}`, {
+      position: import_react_toastify.toast.POSITION.BOTTOM_RIGHT,
+      className: ` notif-${notifText.slice(0, 10).toLowerCase()}`
+    });
+    timeoutId = setTimeout(notify, 400);
+    return () => {
+      timeoutId && clearTimeout(timeoutId);
+    };
+  }, [notifText]);
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_jsx_runtime9.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_react_toastify.ToastContainer, { theme: "dark" }) });
+};
+
+// components/Panels/Footer/Footer.tsx
+var import_jsx_runtime10 = require("react/jsx-runtime");
+var Footer = () => {
+  const {
+    state: { errorMessages },
+    dispatch
+  } = (0, import_react12.useContext)(ModalContext_default);
+  const [inputText, inputTextSet] = (0, import_react12.useState)([]);
+  (0, import_react12.useEffect)(() => {
+    inputTextSet(Object.values(errorMessages));
+  }, [errorMessages]);
+  return /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(import_jsx_runtime10.Fragment, { children: inputText.map((notification) => /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(import_react12.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Notifications, { notifText: notification }) }, notification)) });
+};
+
+// components/Panels/MainMenu.tsx
+var import_jsx_runtime11 = require("react/jsx-runtime");
 var MainMenu = () => {
-  const [registerInit, setRegisterInit] = (0, import_react11.useState)(false);
+  const [userLoginType, setUserLoginType] = (0, import_react13.useState)({
+    type: "login",
+    state: false
+  });
+  const [registerInit, setRegisterInit] = (0, import_react13.useState)({
+    type: "register",
+    state: false
+  });
   const { userStatus, userName } = (0, import_react_redux.useSelector)(
     (state) => state.userStatus
   );
   const dispatch = (0, import_react_redux.useDispatch)();
   const buttonsHandlers = [
-    () => dispatch(userLogin()),
-    () => setRegisterInit(!registerInit),
+    () => {
+      dispatch(userLogin());
+      setUserLoginType({
+        type: "login",
+        state: !userLoginType.state
+      });
+    },
+    () => setRegisterInit({
+      type: "register",
+      state: !registerInit.state
+    }),
     () => {
       console.log("LOG OUT" /* LOGOUT */);
       dispatch(userLogin());
     }
   ];
   const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
-  return /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_react12.Menu, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(
-    import_react12.Flex,
-    {
-      minWidth: "max-content",
-      alignItems: "center",
-      justifyContent: "right",
-      gap: "4",
-      children: [
-        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(ModalContentProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(InitialFocus, { registerInit }) }),
-        buttons.map(
-          (_a, i) => {
-            var _b = _a, { text, render, onClick, hasUserName, commonStyles: commonStyles2 } = _b, rest = __objRest(_b, ["text", "render", "onClick", "hasUserName", "commonStyles"]);
-            return render && /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(
-              import_react12.Button,
-              __spreadProps(__spreadValues(__spreadValues({}, rest), commonStyles2), {
-                onClick: () => {
-                  if (Array.isArray(onClick)) {
-                    onClick[i]();
-                  }
-                },
-                children: [
-                  hasUserName && (userName == null ? void 0 : userName.toUpperCase()),
-                  ` `,
-                  text
-                ]
-              }),
-              text
-            );
-          }
-        )
-      ]
-    }
-  ) });
+  return /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(import_jsx_runtime11.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(ModalContentProvider, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(import_react14.Menu, { children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+      import_react14.Flex,
+      {
+        minWidth: "max-content",
+        alignItems: "center",
+        justifyContent: "right",
+        gap: "4",
+        children: [
+          /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
+            UserLoginPanel,
+            {
+              userLoginType: userLoginType.state ? userLoginType : registerInit
+            }
+          ),
+          buttons.map(
+            (_a, i) => {
+              var _b = _a, {
+                text,
+                shouldDisplay,
+                onClick,
+                hasUserName,
+                commonStyles: commonStyles2
+              } = _b, rest = __objRest(_b, [
+                "text",
+                "shouldDisplay",
+                "onClick",
+                "hasUserName",
+                "commonStyles"
+              ]);
+              return shouldDisplay && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
+                import_react14.Button,
+                __spreadProps(__spreadValues(__spreadValues({}, rest), commonStyles2), {
+                  onClick: () => {
+                    if (Array.isArray(onClick)) {
+                      onClick[i]();
+                    }
+                  },
+                  children: [
+                    hasUserName && (userName == null ? void 0 : userName.toUpperCase()),
+                    text
+                  ]
+                }),
+                text
+              );
+            }
+          )
+        ]
+      }
+    ) }),
+    /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(Footer, {})
+  ] }) });
 };
 
 // store/store.ts
@@ -503,7 +624,7 @@ var store = (0, import_toolkit2.configureStore)({
 
 // layout/MainMenuPanel.tsx
 var import_react_redux2 = require("react-redux");
-var import_jsx_runtime10 = require("react/jsx-runtime");
+var import_jsx_runtime12 = require("react/jsx-runtime");
 var Container = import_styled.default.div`
 	background-color: #0e0d0d;
 	height: 100%;
@@ -518,12 +639,12 @@ var Title = import_styled.default.h2`
 var MainMenuPanel = ({
   title,
   children
-}) => /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(import_react_redux2.Provider, { store, children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(import_react13.ChakraProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(Container, { children: [
-  /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(Title, { children: [
+}) => /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_redux2.Provider, { store, children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react15.ChakraProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Container, { children: [
+  /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Title, { children: [
     "Title: ",
     title
   ] }),
-  /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(MainMenu, {}),
+  /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(MainMenu, {}),
   children
 ] }) }) });
 // Annotate the CommonJS export names for ESM import in node:

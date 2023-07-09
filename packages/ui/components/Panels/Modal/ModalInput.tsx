@@ -2,12 +2,15 @@ import { Input, Text } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import ModalContext from "./state/ModalContext";
 import { ModalActionTypes } from "./state/ModalActions";
+import { useLocalStorage } from "usehooks-ts";
 
 export const FormInput = ({
 	inputType = "",
+	panelName = "",
 	refer,
 }: {
 	inputType?: string;
+	panelName?: string;
 	refer?: React.RefObject<HTMLInputElement>;
 }) => {
 	const {
@@ -18,7 +21,7 @@ export const FormInput = ({
 		inputType && inputType in errorMessages
 			? errorMessages[inputType as keyof typeof errorMessages]
 			: "";
-	const [inputField, setInputField] = useState({
+	const [inputField, setInputField] = useLocalStorage(panelName, {
 		[inputType]: "",
 	});
 
@@ -74,7 +77,7 @@ export const FormInput = ({
 				id={inputType}
 				ref={refer}
 				type={inputType}
-				value={inputField[inputType]}
+				value={inputField[inputType] || ""}
 				placeholder={inputType}
 				onChange={(e) => handleInputChange(e, inputType)}
 				focusBorderColor="red.300"

@@ -9,44 +9,35 @@ import {
 	Button,
 	useDisclosure,
 } from "@chakra-ui/react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { ModalActionTypes } from "./state/ModalActions";
 import { ModalPanel } from "./ModalPanel";
 import ModalContext from "./state/ModalContext";
 import { Form } from "../../Atoms/Form";
 import * as yup from "yup";
 import { SetErrorMessagesAction } from "./state/ModalReducer";
+import { registerSchema } from "./state/Schemas";
 
 type FormErrors = {
 	email?: string;
 	password?: string;
 };
 
-const personSchema = yup.object({
-	email: yup
-		.string()
-		.default("mail@domain.com")
-		.nullable("Email is invalid")
-		.email("Email is invalid")
-		.matches(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/, "Email is invalid")
-		.required("Email is required"),
-	password: yup
-		.string()
-		.min(8, "Password is to short")
-		.max(40, "Password is to long")
-		.required("Password is required"),
-});
-
-interface Person extends yup.InferType<typeof personSchema> {}
-
 const validateHelper = async (formData: Record<string, string>) => {
-	await personSchema.validate(formData, { abortEarly: false });
+	await registerSchema.validate(formData, { abortEarly: false });
 };
 
-export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
+export const UserLoginPanel = ({
+	userLoginType,
+}: {
+	userLoginType: {
+		type: "login" | "register";
+		state: boolean;
+	};
+}) => {
+	console.log("userLoginType", userLoginType);
 	const [initialized, setInitialized] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
-
 	const [validationAttempt, setValidationAttempt] = useState(0);
 
 	const {
@@ -56,7 +47,7 @@ export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
 
 	useEffect(() => {
 		initialized ? onOpen() : setInitialized(true);
-	}, [registerInit, registerInit]);
+	}, [userLoginType]);
 
 	const initialRef = useRef(null);
 	const finalRef = useRef(null);
@@ -102,6 +93,33 @@ export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
 		validationAttempt > 0 && validateAndDispatch(formData);
 	}, [isTyping, validationAttempt]);
 
+	const modalData = {
+		register: [
+			{
+				label: "Email",
+				inputType: "email",
+				refer: userEmailRef,
+			},
+			{
+				label: "Password",
+				inputType: "password",
+				refer: userPasswordRef,
+			},
+		],
+		login: [
+			{
+				label: "Email-Login",
+				inputType: "email",
+				refer: userEmailRef,
+			},
+			{
+				label: "Password-Login",
+				inputType: "password",
+				refer: userPasswordRef,
+			},
+		],
+	};
+
 	return (
 		<>
 			<Modal
@@ -120,18 +138,34 @@ export const InitialFocus = ({ registerInit }: { registerInit: boolean }) => {
 					<ModalCloseButton />
 					<Form onSubmit={handleSubmit}>
 						<ModalBody pb={6}>
-							<ModalPanel>
-								<ModalPanel.Label labelProps={"Email"} />
-								<ModalPanel.Input inputType={"email"} refer={userEmailRef} />
-								<ModalPanel.Label labelProps={"Password"} />
-								<ModalPanel.Input
-									inputType={"password"}
-									refer={userPasswordRef}
-								/>
-							</ModalPanel>
+							{Object.keys(modalData).map((group) => (
+								<ModalPanel key={group}>
+									{group === userLoginType.type &&
+										modalData[group as keyof typeof modalData].map(
+											({
+												label,
+												inputType,
+												refer,
+											}: {
+												label: string;
+												inputType: string;
+												refer: React.RefObject<HTMLInputElement>;
+											}) => (
+												<Fragment key={label}>
+													<ModalPanel.Label labelProps={label} />
+													<ModalPanel.Input
+														panelName={group}
+														inputType={inputType}
+														refer={refer}
+													/>
+												</Fragment>
+											)
+										)}
+								</ModalPanel>
+							))}
 						</ModalBody>
 						<ModalFooter>
-							<Button bg="green.200" mr={3}>
+							<Button bg="green.200" mr={3} type="submit">
 								Save
 							</Button>
 							<Button onClick={onClose}>Cancel</Button>

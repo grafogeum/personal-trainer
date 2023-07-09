@@ -1,6 +1,5 @@
-import { FormControl, Input } from "@chakra-ui/react";
+import { FormControl } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import { FormInput } from "../Panels/Modal/ModalInput";
 
 export const Form = ({
 	children,
@@ -10,11 +9,8 @@ export const Form = ({
 	onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }) => {
 	return (
-		<form onSubmit={onSubmit}>
-			<FormControl mt={4} isRequired>
-				{children}
-			</FormControl>
-			<Input type="submit" />
-		</form>
+		<FormControl id={""} mt={4} isRequired>
+			<form onSubmit={onSubmit}>{children}</form>
+		</FormControl>
 	);
 };

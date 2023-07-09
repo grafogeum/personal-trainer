@@ -3,4 +3,5 @@ export enum ModalActionTypes {
 	// CLOSE_MODAL = "CLOSE_MODAL",
 	IS_TYPING = "IS_TYPING",
 	SET_ERROR_MESSAGES = "SET_ERROR_MESSAGES",
+	SET_TEST = "SET_TEST",
 }
