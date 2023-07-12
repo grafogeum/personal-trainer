@@ -311,10 +311,10 @@ var validateHelper = (formData) => __async(void 0, null, function* () {
   yield registerSchema.validate(formData, { abortEarly: false });
 });
 var UserLoginPanel = ({
-  userLoginType
+  userModalType,
+  formFields
 }) => {
   var _a, _b, _c, _d;
-  console.log("userLoginType", userLoginType);
   const [initialized, setInitialized] = (0, import_react9.useState)(false);
   const { isOpen, onOpen, onClose } = (0, import_react8.useDisclosure)();
   const [validationAttempt, setValidationAttempt] = (0, import_react9.useState)(0);
@@ -324,7 +324,7 @@ var UserLoginPanel = ({
   } = (0, import_react9.useContext)(ModalContext_default);
   (0, import_react9.useEffect)(() => {
     initialized ? onOpen() : setInitialized(true);
-  }, [userLoginType]);
+  }, [userModalType]);
   const initialRef = (0, import_react9.useRef)(null);
   const finalRef = (0, import_react9.useRef)(null);
   const userEmailRef = (0, import_react9.useRef)(null);
@@ -364,32 +364,9 @@ var UserLoginPanel = ({
   (0, import_react9.useEffect)(() => {
     validationAttempt > 0 && validateAndDispatch(formData);
   }, [isTyping, validationAttempt]);
-  const modalData = {
-    register: [
-      {
-        label: "Email",
-        inputType: "email",
-        refer: userEmailRef
-      },
-      {
-        label: "Password",
-        inputType: "password",
-        refer: userPasswordRef
-      }
-    ],
-    login: [
-      {
-        label: "Email-Login",
-        inputType: "email",
-        refer: userEmailRef
-      },
-      {
-        label: "Password-Login",
-        inputType: "password",
-        refer: userPasswordRef
-      }
-    ]
-  };
+  const formFieldsWithValidation = formFields.map(
+    (field) => field.label === "email" && __spreadProps(__spreadValues({}, field), { refer: userEmailRef }) || field.label === "password" && __spreadProps(__spreadValues({}, field), { refer: userPasswordRef }) || field
+  );
   return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_jsx_runtime7.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     import_react8.Modal,
     {
@@ -409,23 +386,17 @@ var UserLoginPanel = ({
               /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalHeader, { color: "purple.200", children: "Create your account" }),
               /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalCloseButton, {}),
               /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Form, { onSubmit: handleSubmit, children: [
-                /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalBody, { pb: 6, children: Object.keys(modalData).map((group) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel, { children: group === userLoginType.type && modalData[group].map(
-                  ({
-                    label,
-                    inputType,
-                    refer
-                  }) => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react9.Fragment, { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: label }),
-                    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
-                      ModalPanel.Input,
-                      {
-                        panelName: group,
-                        inputType,
-                        refer
-                      }
-                    )
-                  ] }, label)
-                ) }, group)) }),
+                /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalBody, { pb: 6, children: formFieldsWithValidation.map(({ label, inputType, refer }) => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react9.Fragment, { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: label }),
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+                    ModalPanel.Input,
+                    {
+                      panelName: userModalType.type,
+                      inputType,
+                      refer
+                    }
+                  )
+                ] }, label)) }),
                 /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react8.ModalFooter, { children: [
                   /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { bg: "green.200", mr: 3, type: "submit", children: "Save" }),
                   /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { onClick: onClose, children: "Cancel" })
@@ -530,11 +501,11 @@ var Footer = () => {
 // components/Panels/MainMenu.tsx
 var import_jsx_runtime11 = require("react/jsx-runtime");
 var MainMenu = () => {
-  const [userLoginType, setUserLoginType] = (0, import_react13.useState)({
+  const [userLoginPanel, setUserLoginPanel] = (0, import_react13.useState)({
     type: "login",
     state: false
   });
-  const [registerInit, setRegisterInit] = (0, import_react13.useState)({
+  const [registerPanel, setRegisterPanel] = (0, import_react13.useState)({
     type: "register",
     state: false
   });
@@ -545,14 +516,14 @@ var MainMenu = () => {
   const buttonsHandlers = [
     () => {
       dispatch(userLogin());
-      setUserLoginType({
+      setUserLoginPanel({
         type: "login",
-        state: !userLoginType.state
+        state: !userLoginPanel.state
       });
     },
-    () => setRegisterInit({
+    () => setUserLoginPanel({
       type: "register",
-      state: !registerInit.state
+      state: !userLoginPanel.state
     }),
     () => {
       console.log("LOG OUT" /* LOGOUT */);
@@ -560,6 +531,30 @@ var MainMenu = () => {
     }
   ];
   const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
+  const formLoginFields = [
+    {
+      label: "email",
+      inputType: "email"
+    },
+    {
+      label: "password",
+      inputType: "password"
+    }
+  ];
+  const formRegisterFields = [
+    {
+      label: "email",
+      inputType: "email"
+    },
+    {
+      label: "password",
+      inputType: "password"
+    },
+    {
+      label: "age",
+      inputType: "number"
+    }
+  ];
   return /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(import_jsx_runtime11.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(ModalContentProvider, { children: [
     /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(import_react14.Menu, { children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
       import_react14.Flex,
@@ -572,7 +567,8 @@ var MainMenu = () => {
           /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
             UserLoginPanel,
             {
-              userLoginType: userLoginType.state ? userLoginType : registerInit
+              userModalType: userLoginPanel.state ? userLoginPanel : registerPanel,
+              formFields: userLoginPanel.type === "login" ? formLoginFields : formRegisterFields
             }
           ),
           buttons.map(
@@ -593,11 +589,7 @@ var MainMenu = () => {
               return shouldDisplay && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
                 import_react14.Button,
                 __spreadProps(__spreadValues(__spreadValues({}, rest), commonStyles2), {
-                  onClick: () => {
-                    if (Array.isArray(onClick)) {
-                      onClick[i]();
-                    }
-                  },
+                  onClick: () => onClick[i](),
                   children: [
                     hasUserName && (userName == null ? void 0 : userName.toUpperCase()),
                     text

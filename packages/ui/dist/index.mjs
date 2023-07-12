@@ -288,10 +288,10 @@ var validateHelper = (formData) => __async(void 0, null, function* () {
   yield registerSchema.validate(formData, { abortEarly: false });
 });
 var UserLoginPanel = ({
-  userLoginType
+  userModalType,
+  formFields
 }) => {
   var _a, _b, _c, _d;
-  console.log("userLoginType", userLoginType);
   const [initialized, setInitialized] = useState2(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [validationAttempt, setValidationAttempt] = useState2(0);
@@ -301,7 +301,7 @@ var UserLoginPanel = ({
   } = useContext3(ModalContext_default);
   useEffect2(() => {
     initialized ? onOpen() : setInitialized(true);
-  }, [userLoginType]);
+  }, [userModalType]);
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const userEmailRef = useRef(null);
@@ -341,32 +341,9 @@ var UserLoginPanel = ({
   useEffect2(() => {
     validationAttempt > 0 && validateAndDispatch(formData);
   }, [isTyping, validationAttempt]);
-  const modalData = {
-    register: [
-      {
-        label: "Email",
-        inputType: "email",
-        refer: userEmailRef
-      },
-      {
-        label: "Password",
-        inputType: "password",
-        refer: userPasswordRef
-      }
-    ],
-    login: [
-      {
-        label: "Email-Login",
-        inputType: "email",
-        refer: userEmailRef
-      },
-      {
-        label: "Password-Login",
-        inputType: "password",
-        refer: userPasswordRef
-      }
-    ]
-  };
+  const formFieldsWithValidation = formFields.map(
+    (field) => field.label === "email" && __spreadProps(__spreadValues({}, field), { refer: userEmailRef }) || field.label === "password" && __spreadProps(__spreadValues({}, field), { refer: userPasswordRef }) || field
+  );
   return /* @__PURE__ */ jsx7(Fragment5, { children: /* @__PURE__ */ jsxs2(
     Modal,
     {
@@ -386,23 +363,17 @@ var UserLoginPanel = ({
               /* @__PURE__ */ jsx7(ModalHeader, { color: "purple.200", children: "Create your account" }),
               /* @__PURE__ */ jsx7(ModalCloseButton, {}),
               /* @__PURE__ */ jsxs2(Form, { onSubmit: handleSubmit, children: [
-                /* @__PURE__ */ jsx7(ModalBody, { pb: 6, children: Object.keys(modalData).map((group) => /* @__PURE__ */ jsx7(ModalPanel, { children: group === userLoginType.type && modalData[group].map(
-                  ({
-                    label,
-                    inputType,
-                    refer
-                  }) => /* @__PURE__ */ jsxs2(Fragment4, { children: [
-                    /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: label }),
-                    /* @__PURE__ */ jsx7(
-                      ModalPanel.Input,
-                      {
-                        panelName: group,
-                        inputType,
-                        refer
-                      }
-                    )
-                  ] }, label)
-                ) }, group)) }),
+                /* @__PURE__ */ jsx7(ModalBody, { pb: 6, children: formFieldsWithValidation.map(({ label, inputType, refer }) => /* @__PURE__ */ jsxs2(Fragment4, { children: [
+                  /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: label }),
+                  /* @__PURE__ */ jsx7(
+                    ModalPanel.Input,
+                    {
+                      panelName: userModalType.type,
+                      inputType,
+                      refer
+                    }
+                  )
+                ] }, label)) }),
                 /* @__PURE__ */ jsxs2(ModalFooter, { children: [
                   /* @__PURE__ */ jsx7(Button2, { bg: "green.200", mr: 3, type: "submit", children: "Save" }),
                   /* @__PURE__ */ jsx7(Button2, { onClick: onClose, children: "Cancel" })
@@ -507,11 +478,11 @@ var Footer = () => {
 // components/Panels/MainMenu.tsx
 import { Fragment as Fragment9, jsx as jsx11, jsxs as jsxs3 } from "react/jsx-runtime";
 var MainMenu = () => {
-  const [userLoginType, setUserLoginType] = useState4({
+  const [userLoginPanel, setUserLoginPanel] = useState4({
     type: "login",
     state: false
   });
-  const [registerInit, setRegisterInit] = useState4({
+  const [registerPanel, setRegisterPanel] = useState4({
     type: "register",
     state: false
   });
@@ -522,14 +493,14 @@ var MainMenu = () => {
   const buttonsHandlers = [
     () => {
       dispatch(userLogin());
-      setUserLoginType({
+      setUserLoginPanel({
         type: "login",
-        state: !userLoginType.state
+        state: !userLoginPanel.state
       });
     },
-    () => setRegisterInit({
+    () => setUserLoginPanel({
       type: "register",
-      state: !registerInit.state
+      state: !userLoginPanel.state
     }),
     () => {
       console.log("LOG OUT" /* LOGOUT */);
@@ -537,6 +508,30 @@ var MainMenu = () => {
     }
   ];
   const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
+  const formLoginFields = [
+    {
+      label: "email",
+      inputType: "email"
+    },
+    {
+      label: "password",
+      inputType: "password"
+    }
+  ];
+  const formRegisterFields = [
+    {
+      label: "email",
+      inputType: "email"
+    },
+    {
+      label: "password",
+      inputType: "password"
+    },
+    {
+      label: "age",
+      inputType: "number"
+    }
+  ];
   return /* @__PURE__ */ jsx11(Fragment9, { children: /* @__PURE__ */ jsxs3(ModalContentProvider, { children: [
     /* @__PURE__ */ jsx11(Menu, { children: /* @__PURE__ */ jsxs3(
       Flex,
@@ -549,7 +544,8 @@ var MainMenu = () => {
           /* @__PURE__ */ jsx11(
             UserLoginPanel,
             {
-              userLoginType: userLoginType.state ? userLoginType : registerInit
+              userModalType: userLoginPanel.state ? userLoginPanel : registerPanel,
+              formFields: userLoginPanel.type === "login" ? formLoginFields : formRegisterFields
             }
           ),
           buttons.map(
@@ -570,11 +566,7 @@ var MainMenu = () => {
               return shouldDisplay && /* @__PURE__ */ jsxs3(
                 Button3,
                 __spreadProps(__spreadValues(__spreadValues({}, rest), commonStyles2), {
-                  onClick: () => {
-                    if (Array.isArray(onClick)) {
-                      onClick[i]();
-                    }
-                  },
+                  onClick: () => onClick[i](),
                   children: [
                     hasUserName && (userName == null ? void 0 : userName.toUpperCase()),
                     text
