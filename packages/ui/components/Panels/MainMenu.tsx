@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Menu, Button, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -45,22 +45,20 @@ import { Footer } from "./Footer/Footer";
 // 	}
 // };
 
-type UserLoginType = {
+type UserModalType = {
 	type: "login" | "register";
 	state: boolean;
 };
 
 export const MainMenu = () => {
-	const [userLoginType, setUserLoginType] = useState<UserLoginType>({
+	const [userLoginPanel, setUserLoginPanel] = useState<UserModalType>({
 		type: "login",
 		state: false,
 	});
-	const [registerInit, setRegisterInit] = useState<UserLoginType>({
+	const [registerPanel, setRegisterPanel] = useState<UserModalType>({
 		type: "register",
 		state: false,
 	});
-	// const [userLoginType, setUserLoginType] = useState(false);
-	// const [loginInit, setLoginInit] = useState(false);
 	const { userStatus, userName } = useSelector(
 		(state: RootState) => state.userStatus
 	);
@@ -68,15 +66,15 @@ export const MainMenu = () => {
 	const buttonsHandlers = [
 		() => {
 			dispatch(userLogin());
-			setUserLoginType({
+			setUserLoginPanel({
 				type: "login",
-				state: !userLoginType.state,
+				state: !userLoginPanel.state,
 			});
 		},
 		() =>
-			setRegisterInit({
+			setUserLoginPanel({
 				type: "register",
-				state: !registerInit.state,
+				state: !userLoginPanel.state,
 			}),
 		() => {
 			console.log(UserStatusStatus.LOGOUT);
@@ -84,6 +82,38 @@ export const MainMenu = () => {
 		},
 	];
 	const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
+
+	const formLoginFields = [
+		{
+			label: "email",
+			inputType: "email",
+		},
+		{
+			label: "password",
+			inputType: "password",
+		},
+	] as {
+		label: "email" | "password";
+		inputType: "email" | "password";
+	}[];
+
+	const formRegisterFields = [
+		{
+			label: "email",
+			inputType: "email",
+		},
+		{
+			label: "password",
+			inputType: "password",
+		},
+		{
+			label: "age",
+			inputType: "number",
+		},
+	] as {
+		label: "email" | "password" | "age";
+		inputType: "email" | "password" | "number";
+	}[];
 
 	return (
 		<>
@@ -96,7 +126,14 @@ export const MainMenu = () => {
 						gap="4"
 					>
 						<UserLoginPanel
-							userLoginType={userLoginType.state ? userLoginType : registerInit}
+							userModalType={
+								userLoginPanel.state ? userLoginPanel : registerPanel
+							}
+							formFields={
+								userLoginPanel.type === "login"
+									? formLoginFields
+									: formRegisterFields
+							}
 						/>
 
 						{buttons.map(
@@ -116,11 +153,7 @@ export const MainMenu = () => {
 										key={text}
 										{...rest}
 										{...commonStyles}
-										onClick={() => {
-											if (Array.isArray(onClick)) {
-												onClick[i]();
-											}
-										}}
+										onClick={() => onClick[i]()}
 									>
 										{hasUserName && userName?.toUpperCase()}
 										{text}

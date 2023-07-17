@@ -28,14 +28,19 @@ const validateHelper = async (formData: Record<string, string>) => {
 };
 
 export const UserLoginPanel = ({
-	userLoginType,
+	userModalType,
+	formFields,
 }: {
-	userLoginType: {
+	userModalType: {
 		type: "login" | "register";
 		state: boolean;
 	};
+	formFields: {
+		label: "email" | "password" | "age";
+		inputType: "email" | "password" | "number";
+		refer?: React.RefObject<HTMLInputElement>;
+	}[];
 }) => {
-	console.log("userLoginType", userLoginType);
 	const [initialized, setInitialized] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [validationAttempt, setValidationAttempt] = useState(0);
@@ -47,7 +52,7 @@ export const UserLoginPanel = ({
 
 	useEffect(() => {
 		initialized ? onOpen() : setInitialized(true);
-	}, [userLoginType]);
+	}, [userModalType]);
 
 	const initialRef = useRef(null);
 	const finalRef = useRef(null);
@@ -93,33 +98,12 @@ export const UserLoginPanel = ({
 		validationAttempt > 0 && validateAndDispatch(formData);
 	}, [isTyping, validationAttempt]);
 
-	const modalData = {
-		register: [
-			{
-				label: "Email",
-				inputType: "email",
-				refer: userEmailRef,
-			},
-			{
-				label: "Password",
-				inputType: "password",
-				refer: userPasswordRef,
-			},
-		],
-		login: [
-			{
-				label: "Email-Login",
-				inputType: "email",
-				refer: userEmailRef,
-			},
-			{
-				label: "Password-Login",
-				inputType: "password",
-				refer: userPasswordRef,
-			},
-		],
-	};
-
+	const formFieldsWithValidation = formFields.map(
+		(field) =>
+			(field.label === "email" && { ...field, refer: userEmailRef }) ||
+			(field.label === "password" && { ...field, refer: userPasswordRef }) ||
+			field
+	);
 	return (
 		<>
 			<Modal
@@ -138,30 +122,15 @@ export const UserLoginPanel = ({
 					<ModalCloseButton />
 					<Form onSubmit={handleSubmit}>
 						<ModalBody pb={6}>
-							{Object.keys(modalData).map((group) => (
-								<ModalPanel key={group}>
-									{group === userLoginType.type &&
-										modalData[group as keyof typeof modalData].map(
-											({
-												label,
-												inputType,
-												refer,
-											}: {
-												label: string;
-												inputType: string;
-												refer: React.RefObject<HTMLInputElement>;
-											}) => (
-												<Fragment key={label}>
-													<ModalPanel.Label labelProps={label} />
-													<ModalPanel.Input
-														panelName={group}
-														inputType={inputType}
-														refer={refer}
-													/>
-												</Fragment>
-											)
-										)}
-								</ModalPanel>
+							{formFieldsWithValidation.map(({ label, inputType, refer }) => (
+								<Fragment key={label}>
+									<ModalPanel.Label labelProps={label} />
+									<ModalPanel.Input
+										panelName={userModalType.type}
+										inputType={inputType}
+										refer={refer}
+									/>
+								</Fragment>
 							))}
 						</ModalBody>
 						<ModalFooter>

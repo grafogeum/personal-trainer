@@ -84,7 +84,8 @@ __export(ui_exports, {
 module.exports = __toCommonJS(ui_exports);
 
 // layout/MainMenuPanel.tsx
-var import_react15 = require("@chakra-ui/react");
+var import_react15 = require("react");
+var import_react16 = require("@chakra-ui/react");
 var import_styled = __toESM(require("@emotion/styled"));
 
 // components/Panels/MainMenu.tsx
@@ -311,10 +312,10 @@ var validateHelper = (formData) => __async(void 0, null, function* () {
   yield registerSchema.validate(formData, { abortEarly: false });
 });
 var UserLoginPanel = ({
-  userLoginType
+  userModalType,
+  formFields
 }) => {
   var _a, _b, _c, _d;
-  console.log("userLoginType", userLoginType);
   const [initialized, setInitialized] = (0, import_react9.useState)(false);
   const { isOpen, onOpen, onClose } = (0, import_react8.useDisclosure)();
   const [validationAttempt, setValidationAttempt] = (0, import_react9.useState)(0);
@@ -324,7 +325,7 @@ var UserLoginPanel = ({
   } = (0, import_react9.useContext)(ModalContext_default);
   (0, import_react9.useEffect)(() => {
     initialized ? onOpen() : setInitialized(true);
-  }, [userLoginType]);
+  }, [userModalType]);
   const initialRef = (0, import_react9.useRef)(null);
   const finalRef = (0, import_react9.useRef)(null);
   const userEmailRef = (0, import_react9.useRef)(null);
@@ -364,32 +365,9 @@ var UserLoginPanel = ({
   (0, import_react9.useEffect)(() => {
     validationAttempt > 0 && validateAndDispatch(formData);
   }, [isTyping, validationAttempt]);
-  const modalData = {
-    register: [
-      {
-        label: "Email",
-        inputType: "email",
-        refer: userEmailRef
-      },
-      {
-        label: "Password",
-        inputType: "password",
-        refer: userPasswordRef
-      }
-    ],
-    login: [
-      {
-        label: "Email-Login",
-        inputType: "email",
-        refer: userEmailRef
-      },
-      {
-        label: "Password-Login",
-        inputType: "password",
-        refer: userPasswordRef
-      }
-    ]
-  };
+  const formFieldsWithValidation = formFields.map(
+    (field) => field.label === "email" && __spreadProps(__spreadValues({}, field), { refer: userEmailRef }) || field.label === "password" && __spreadProps(__spreadValues({}, field), { refer: userPasswordRef }) || field
+  );
   return /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_jsx_runtime7.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(
     import_react8.Modal,
     {
@@ -409,23 +387,17 @@ var UserLoginPanel = ({
               /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalHeader, { color: "purple.200", children: "Create your account" }),
               /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalCloseButton, {}),
               /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(Form, { onSubmit: handleSubmit, children: [
-                /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalBody, { pb: 6, children: Object.keys(modalData).map((group) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel, { children: group === userLoginType.type && modalData[group].map(
-                  ({
-                    label,
-                    inputType,
-                    refer
-                  }) => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react9.Fragment, { children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: label }),
-                    /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
-                      ModalPanel.Input,
-                      {
-                        panelName: group,
-                        inputType,
-                        refer
-                      }
-                    )
-                  ] }, label)
-                ) }, group)) }),
+                /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.ModalBody, { pb: 6, children: formFieldsWithValidation.map(({ label, inputType, refer }) => /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react9.Fragment, { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(ModalPanel.Label, { labelProps: label }),
+                  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+                    ModalPanel.Input,
+                    {
+                      panelName: userModalType.type,
+                      inputType,
+                      refer
+                    }
+                  )
+                ] }, label)) }),
                 /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_react8.ModalFooter, { children: [
                   /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { bg: "green.200", mr: 3, type: "submit", children: "Save" }),
                   /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_react8.Button, { onClick: onClose, children: "Cancel" })
@@ -530,11 +502,11 @@ var Footer = () => {
 // components/Panels/MainMenu.tsx
 var import_jsx_runtime11 = require("react/jsx-runtime");
 var MainMenu = () => {
-  const [userLoginType, setUserLoginType] = (0, import_react13.useState)({
+  const [userLoginPanel, setUserLoginPanel] = (0, import_react13.useState)({
     type: "login",
     state: false
   });
-  const [registerInit, setRegisterInit] = (0, import_react13.useState)({
+  const [registerPanel, setRegisterPanel] = (0, import_react13.useState)({
     type: "register",
     state: false
   });
@@ -545,14 +517,14 @@ var MainMenu = () => {
   const buttonsHandlers = [
     () => {
       dispatch(userLogin());
-      setUserLoginType({
+      setUserLoginPanel({
         type: "login",
-        state: !userLoginType.state
+        state: !userLoginPanel.state
       });
     },
-    () => setRegisterInit({
+    () => setUserLoginPanel({
       type: "register",
-      state: !registerInit.state
+      state: !userLoginPanel.state
     }),
     () => {
       console.log("LOG OUT" /* LOGOUT */);
@@ -560,6 +532,30 @@ var MainMenu = () => {
     }
   ];
   const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
+  const formLoginFields = [
+    {
+      label: "email",
+      inputType: "email"
+    },
+    {
+      label: "password",
+      inputType: "password"
+    }
+  ];
+  const formRegisterFields = [
+    {
+      label: "email",
+      inputType: "email"
+    },
+    {
+      label: "password",
+      inputType: "password"
+    },
+    {
+      label: "age",
+      inputType: "number"
+    }
+  ];
   return /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(import_jsx_runtime11.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(ModalContentProvider, { children: [
     /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(import_react14.Menu, { children: /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
       import_react14.Flex,
@@ -572,7 +568,8 @@ var MainMenu = () => {
           /* @__PURE__ */ (0, import_jsx_runtime11.jsx)(
             UserLoginPanel,
             {
-              userLoginType: userLoginType.state ? userLoginType : registerInit
+              userModalType: userLoginPanel.state ? userLoginPanel : registerPanel,
+              formFields: userLoginPanel.type === "login" ? formLoginFields : formRegisterFields
             }
           ),
           buttons.map(
@@ -593,11 +590,7 @@ var MainMenu = () => {
               return shouldDisplay && /* @__PURE__ */ (0, import_jsx_runtime11.jsxs)(
                 import_react14.Button,
                 __spreadProps(__spreadValues(__spreadValues({}, rest), commonStyles2), {
-                  onClick: () => {
-                    if (Array.isArray(onClick)) {
-                      onClick[i]();
-                    }
-                  },
+                  onClick: () => onClick[i](),
                   children: [
                     hasUserName && (userName == null ? void 0 : userName.toUpperCase()),
                     text
@@ -624,6 +617,12 @@ var store = (0, import_toolkit2.configureStore)({
 
 // layout/MainMenuPanel.tsx
 var import_react_redux2 = require("react-redux");
+var import_react_router_dom = require("react-router-dom");
+
+// ../enums/constants.ts
+var pattern = /\/(\w+)/;
+
+// layout/MainMenuPanel.tsx
 var import_jsx_runtime12 = require("react/jsx-runtime");
 var Container = import_styled.default.div`
 	background-color: #0e0d0d;
@@ -636,15 +635,53 @@ var Container = import_styled.default.div`
 var Title = import_styled.default.h2`
 	color: #fff;
 `;
+var LinkStyled = import_styled.default.a`
+	color: ${({ isActive }) => isActive ? "#d6bcfa" : "#fff"};
+	font: "20px Tahoma Bold";
+	text-transform: uppercase;
+	margin: 0 20px;
+	:not(:first-child) {
+		margin-left: 0px;
+	}
+`;
+var Link = ({ path, isActive }) => {
+  var _a;
+  path && (path = ((_a = RegExp(pattern).exec(path)) == null ? void 0 : _a[1]) || "");
+  return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(LinkStyled, { isActive, href: path, children: path });
+};
+var Navigation = import_styled.default.nav`
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	width: 100%;
+`;
+var NavigationLinksStyled = import_styled.default.div`
+	display: flex;
+	align-items: baseline;
+	background-color: #333;
+`;
 var MainMenuPanel = ({
   title,
+  menuLinks = [],
   children
-}) => /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_redux2.Provider, { store, children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react15.ChakraProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Container, { children: [
+}) => /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_redux2.Provider, { store, children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react16.ChakraProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Container, { children: [
   /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Title, { children: [
     "Title: ",
     title
   ] }),
-  /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(MainMenu, {}),
+  /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Navigation, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(NavigationLinksStyled, { children: menuLinks.map(({ path }, i) => {
+      const currentPath = window.location.pathname;
+      const isActive = currentPath === path;
+      console.log("currentPath", currentPath);
+      console.log("####", path);
+      return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react15.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Link, { path, isActive }) }, [path, i].join(""));
+    }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(MainMenu, {})
+  ] }),
+  menuLinks.map(({ path, component }, i) => {
+    return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react15.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_router_dom.BrowserRouter, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_router_dom.Routes, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_router_dom.Route, { path, element: component }) }) }) }, [path, i].join(""));
+  }),
   children
 ] }) }) });
 // Annotate the CommonJS export names for ESM import in node:

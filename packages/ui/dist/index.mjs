@@ -51,6 +51,7 @@ var __async = (__this, __arguments, generator) => {
 };
 
 // layout/MainMenuPanel.tsx
+import { Fragment as Fragment10 } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 
@@ -288,10 +289,10 @@ var validateHelper = (formData) => __async(void 0, null, function* () {
   yield registerSchema.validate(formData, { abortEarly: false });
 });
 var UserLoginPanel = ({
-  userLoginType
+  userModalType,
+  formFields
 }) => {
   var _a, _b, _c, _d;
-  console.log("userLoginType", userLoginType);
   const [initialized, setInitialized] = useState2(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [validationAttempt, setValidationAttempt] = useState2(0);
@@ -301,7 +302,7 @@ var UserLoginPanel = ({
   } = useContext3(ModalContext_default);
   useEffect2(() => {
     initialized ? onOpen() : setInitialized(true);
-  }, [userLoginType]);
+  }, [userModalType]);
   const initialRef = useRef(null);
   const finalRef = useRef(null);
   const userEmailRef = useRef(null);
@@ -341,32 +342,9 @@ var UserLoginPanel = ({
   useEffect2(() => {
     validationAttempt > 0 && validateAndDispatch(formData);
   }, [isTyping, validationAttempt]);
-  const modalData = {
-    register: [
-      {
-        label: "Email",
-        inputType: "email",
-        refer: userEmailRef
-      },
-      {
-        label: "Password",
-        inputType: "password",
-        refer: userPasswordRef
-      }
-    ],
-    login: [
-      {
-        label: "Email-Login",
-        inputType: "email",
-        refer: userEmailRef
-      },
-      {
-        label: "Password-Login",
-        inputType: "password",
-        refer: userPasswordRef
-      }
-    ]
-  };
+  const formFieldsWithValidation = formFields.map(
+    (field) => field.label === "email" && __spreadProps(__spreadValues({}, field), { refer: userEmailRef }) || field.label === "password" && __spreadProps(__spreadValues({}, field), { refer: userPasswordRef }) || field
+  );
   return /* @__PURE__ */ jsx7(Fragment5, { children: /* @__PURE__ */ jsxs2(
     Modal,
     {
@@ -386,23 +364,17 @@ var UserLoginPanel = ({
               /* @__PURE__ */ jsx7(ModalHeader, { color: "purple.200", children: "Create your account" }),
               /* @__PURE__ */ jsx7(ModalCloseButton, {}),
               /* @__PURE__ */ jsxs2(Form, { onSubmit: handleSubmit, children: [
-                /* @__PURE__ */ jsx7(ModalBody, { pb: 6, children: Object.keys(modalData).map((group) => /* @__PURE__ */ jsx7(ModalPanel, { children: group === userLoginType.type && modalData[group].map(
-                  ({
-                    label,
-                    inputType,
-                    refer
-                  }) => /* @__PURE__ */ jsxs2(Fragment4, { children: [
-                    /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: label }),
-                    /* @__PURE__ */ jsx7(
-                      ModalPanel.Input,
-                      {
-                        panelName: group,
-                        inputType,
-                        refer
-                      }
-                    )
-                  ] }, label)
-                ) }, group)) }),
+                /* @__PURE__ */ jsx7(ModalBody, { pb: 6, children: formFieldsWithValidation.map(({ label, inputType, refer }) => /* @__PURE__ */ jsxs2(Fragment4, { children: [
+                  /* @__PURE__ */ jsx7(ModalPanel.Label, { labelProps: label }),
+                  /* @__PURE__ */ jsx7(
+                    ModalPanel.Input,
+                    {
+                      panelName: userModalType.type,
+                      inputType,
+                      refer
+                    }
+                  )
+                ] }, label)) }),
                 /* @__PURE__ */ jsxs2(ModalFooter, { children: [
                   /* @__PURE__ */ jsx7(Button2, { bg: "green.200", mr: 3, type: "submit", children: "Save" }),
                   /* @__PURE__ */ jsx7(Button2, { onClick: onClose, children: "Cancel" })
@@ -507,11 +479,11 @@ var Footer = () => {
 // components/Panels/MainMenu.tsx
 import { Fragment as Fragment9, jsx as jsx11, jsxs as jsxs3 } from "react/jsx-runtime";
 var MainMenu = () => {
-  const [userLoginType, setUserLoginType] = useState4({
+  const [userLoginPanel, setUserLoginPanel] = useState4({
     type: "login",
     state: false
   });
-  const [registerInit, setRegisterInit] = useState4({
+  const [registerPanel, setRegisterPanel] = useState4({
     type: "register",
     state: false
   });
@@ -522,14 +494,14 @@ var MainMenu = () => {
   const buttonsHandlers = [
     () => {
       dispatch(userLogin());
-      setUserLoginType({
+      setUserLoginPanel({
         type: "login",
-        state: !userLoginType.state
+        state: !userLoginPanel.state
       });
     },
-    () => setRegisterInit({
+    () => setUserLoginPanel({
       type: "register",
-      state: !registerInit.state
+      state: !userLoginPanel.state
     }),
     () => {
       console.log("LOG OUT" /* LOGOUT */);
@@ -537,6 +509,30 @@ var MainMenu = () => {
     }
   ];
   const buttons = buttonsPanel(userStatus, dispatch, buttonsHandlers);
+  const formLoginFields = [
+    {
+      label: "email",
+      inputType: "email"
+    },
+    {
+      label: "password",
+      inputType: "password"
+    }
+  ];
+  const formRegisterFields = [
+    {
+      label: "email",
+      inputType: "email"
+    },
+    {
+      label: "password",
+      inputType: "password"
+    },
+    {
+      label: "age",
+      inputType: "number"
+    }
+  ];
   return /* @__PURE__ */ jsx11(Fragment9, { children: /* @__PURE__ */ jsxs3(ModalContentProvider, { children: [
     /* @__PURE__ */ jsx11(Menu, { children: /* @__PURE__ */ jsxs3(
       Flex,
@@ -549,7 +545,8 @@ var MainMenu = () => {
           /* @__PURE__ */ jsx11(
             UserLoginPanel,
             {
-              userLoginType: userLoginType.state ? userLoginType : registerInit
+              userModalType: userLoginPanel.state ? userLoginPanel : registerPanel,
+              formFields: userLoginPanel.type === "login" ? formLoginFields : formRegisterFields
             }
           ),
           buttons.map(
@@ -570,11 +567,7 @@ var MainMenu = () => {
               return shouldDisplay && /* @__PURE__ */ jsxs3(
                 Button3,
                 __spreadProps(__spreadValues(__spreadValues({}, rest), commonStyles2), {
-                  onClick: () => {
-                    if (Array.isArray(onClick)) {
-                      onClick[i]();
-                    }
-                  },
+                  onClick: () => onClick[i](),
                   children: [
                     hasUserName && (userName == null ? void 0 : userName.toUpperCase()),
                     text
@@ -601,6 +594,12 @@ var store = configureStore({
 
 // layout/MainMenuPanel.tsx
 import { Provider } from "react-redux";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// ../enums/constants.ts
+var pattern = /\/(\w+)/;
+
+// layout/MainMenuPanel.tsx
 import { jsx as jsx12, jsxs as jsxs4 } from "react/jsx-runtime";
 var Container = styled.div`
 	background-color: #0e0d0d;
@@ -613,15 +612,53 @@ var Container = styled.div`
 var Title = styled.h2`
 	color: #fff;
 `;
+var LinkStyled = styled.a`
+	color: ${({ isActive }) => isActive ? "#d6bcfa" : "#fff"};
+	font: "20px Tahoma Bold";
+	text-transform: uppercase;
+	margin: 0 20px;
+	:not(:first-child) {
+		margin-left: 0px;
+	}
+`;
+var Link = ({ path, isActive }) => {
+  var _a;
+  path && (path = ((_a = RegExp(pattern).exec(path)) == null ? void 0 : _a[1]) || "");
+  return /* @__PURE__ */ jsx12(LinkStyled, { isActive, href: path, children: path });
+};
+var Navigation = styled.nav`
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	width: 100%;
+`;
+var NavigationLinksStyled = styled.div`
+	display: flex;
+	align-items: baseline;
+	background-color: #333;
+`;
 var MainMenuPanel = ({
   title,
+  menuLinks = [],
   children
 }) => /* @__PURE__ */ jsx12(Provider, { store, children: /* @__PURE__ */ jsx12(ChakraProvider, { children: /* @__PURE__ */ jsxs4(Container, { children: [
   /* @__PURE__ */ jsxs4(Title, { children: [
     "Title: ",
     title
   ] }),
-  /* @__PURE__ */ jsx12(MainMenu, {}),
+  /* @__PURE__ */ jsxs4(Navigation, { children: [
+    /* @__PURE__ */ jsx12(NavigationLinksStyled, { children: menuLinks.map(({ path }, i) => {
+      const currentPath = window.location.pathname;
+      const isActive = currentPath === path;
+      console.log("currentPath", currentPath);
+      console.log("####", path);
+      return /* @__PURE__ */ jsx12(Fragment10, { children: /* @__PURE__ */ jsx12(Link, { path, isActive }) }, [path, i].join(""));
+    }) }),
+    /* @__PURE__ */ jsx12(MainMenu, {})
+  ] }),
+  menuLinks.map(({ path, component }, i) => {
+    return /* @__PURE__ */ jsx12(Fragment10, { children: /* @__PURE__ */ jsx12(BrowserRouter, { children: /* @__PURE__ */ jsx12(Routes, { children: /* @__PURE__ */ jsx12(Route, { path, element: component }) }) }) }, [path, i].join(""));
+  }),
   children
 ] }) }) });
 export {
