@@ -84,7 +84,8 @@ __export(ui_exports, {
 module.exports = __toCommonJS(ui_exports);
 
 // layout/MainMenuPanel.tsx
-var import_react15 = require("@chakra-ui/react");
+var import_react15 = require("react");
+var import_react16 = require("@chakra-ui/react");
 var import_styled = __toESM(require("@emotion/styled"));
 
 // components/Panels/MainMenu.tsx
@@ -616,6 +617,12 @@ var store = (0, import_toolkit2.configureStore)({
 
 // layout/MainMenuPanel.tsx
 var import_react_redux2 = require("react-redux");
+var import_react_router_dom = require("react-router-dom");
+
+// ../enums/constants.ts
+var pattern = /\/(\w+)/;
+
+// layout/MainMenuPanel.tsx
 var import_jsx_runtime12 = require("react/jsx-runtime");
 var Container = import_styled.default.div`
 	background-color: #0e0d0d;
@@ -628,15 +635,53 @@ var Container = import_styled.default.div`
 var Title = import_styled.default.h2`
 	color: #fff;
 `;
+var LinkStyled = import_styled.default.a`
+	color: ${({ isActive }) => isActive ? "#d6bcfa" : "#fff"};
+	font: "20px Tahoma Bold";
+	text-transform: uppercase;
+	margin: 0 20px;
+	:not(:first-child) {
+		margin-left: 0px;
+	}
+`;
+var Link = ({ path, isActive }) => {
+  var _a;
+  path && (path = ((_a = RegExp(pattern).exec(path)) == null ? void 0 : _a[1]) || "");
+  return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(LinkStyled, { isActive, href: path, children: path });
+};
+var Navigation = import_styled.default.nav`
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	width: 100%;
+`;
+var NavigationLinksStyled = import_styled.default.div`
+	display: flex;
+	align-items: baseline;
+	background-color: #333;
+`;
 var MainMenuPanel = ({
   title,
+  menuLinks = [],
   children
-}) => /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_redux2.Provider, { store, children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react15.ChakraProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Container, { children: [
+}) => /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_redux2.Provider, { store, children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react16.ChakraProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Container, { children: [
   /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Title, { children: [
     "Title: ",
     title
   ] }),
-  /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(MainMenu, {}),
+  /* @__PURE__ */ (0, import_jsx_runtime12.jsxs)(Navigation, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(NavigationLinksStyled, { children: menuLinks.map(({ path }, i) => {
+      const currentPath = window.location.pathname;
+      const isActive = currentPath === path;
+      console.log("currentPath", currentPath);
+      console.log("####", path);
+      return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react15.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Link, { path, isActive }) }, [path, i].join(""));
+    }) }),
+    /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(MainMenu, {})
+  ] }),
+  menuLinks.map(({ path, component }, i) => {
+    return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react15.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_router_dom.BrowserRouter, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_router_dom.Routes, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react_router_dom.Route, { path, element: component }) }) }) }, [path, i].join(""));
+  }),
   children
 ] }) }) });
 // Annotate the CommonJS export names for ESM import in node:

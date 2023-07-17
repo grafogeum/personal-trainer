@@ -1,9 +1,11 @@
-import { ReactNode } from "react";
+import { Fragment, ReactNode } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import styled from "@emotion/styled";
 import { MainMenu } from "../components/Panels/MainMenu";
 import { store } from "../store/store";
 import { Provider } from "react-redux";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { pattern } from "../../enums/constants";
 
 const Container = styled.div`
 	background-color: #0e0d0d;
@@ -18,18 +20,84 @@ const Title = styled.h2`
 	color: #fff;
 `;
 
+//TODO: move to components  !!!!!
+
+const LinkStyled = styled.a<{ isActive?: boolean }>`
+	color: ${({ isActive }) => (isActive ? "#d6bcfa" : "#fff")};
+	font: "20px Tahoma Bold";
+	text-transform: uppercase;
+	margin: 0 20px;
+	:not(:first-child) {
+		margin-left: 0px;
+	}
+`;
+const Link = ({ path, isActive }: { path: string; isActive: boolean }) => {
+	path &&= RegExp(pattern).exec(path)?.[1] || "";
+	return (
+		<LinkStyled isActive={isActive} href={path}>
+			{path}
+		</LinkStyled>
+	);
+};
+
+const Navigation = styled.nav`
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	width: 100%;
+`;
+
+const NavigationLinksStyled = styled.div`
+	display: flex;
+	align-items: baseline;
+	background-color: #333;
+`;
+
 export const MainMenuPanel = ({
 	title,
+	menuLinks = [],
 	children,
 }: {
 	title?: string;
+	menuLinks?: {
+		path: string;
+		component: any;
+	}[];
+
 	children?: ReactNode;
 }) => (
 	<Provider store={store}>
 		<ChakraProvider>
 			<Container>
 				<Title>Title: {title}</Title>
-				<MainMenu />
+				<Navigation>
+					<NavigationLinksStyled>
+						{menuLinks.map(({ path }, i) => {
+							const currentPath = window.location.pathname;
+							const isActive = currentPath === path;
+							console.log("currentPath", currentPath);
+							console.log("####", path);
+							return (
+								<Fragment key={[path, i].join("")}>
+									<Link path={path} isActive={isActive} />
+								</Fragment>
+							);
+						})}
+					</NavigationLinksStyled>
+					<MainMenu />
+				</Navigation>
+				{menuLinks.map(({ path, component }, i) => {
+					return (
+						<Fragment key={[path, i].join("")}>
+							<BrowserRouter>
+								<Routes>
+									<Route path={path} element={component} />
+								</Routes>
+							</BrowserRouter>
+						</Fragment>
+					);
+				})}
+
 				{children}
 			</Container>
 		</ChakraProvider>
