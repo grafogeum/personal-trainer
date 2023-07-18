@@ -27,7 +27,7 @@ const LinkStyled = styled.a<{ isActive?: boolean }>`
 	font: "20px Tahoma Bold";
 	text-transform: uppercase;
 	margin: 0 20px;
-	:not(:first-child) {
+	:not(:first-of-type) {
 		margin-left: 0px;
 	}
 `;
@@ -75,8 +75,6 @@ export const MainMenuPanel = ({
 						{menuLinks.map(({ path }, i) => {
 							const currentPath = window.location.pathname;
 							const isActive = currentPath === path;
-							console.log("currentPath", currentPath);
-							console.log("####", path);
 							return (
 								<Fragment key={[path, i].join("")}>
 									<Link path={path} isActive={isActive} />

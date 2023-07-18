@@ -617,7 +617,7 @@ var LinkStyled = styled.a`
 	font: "20px Tahoma Bold";
 	text-transform: uppercase;
 	margin: 0 20px;
-	:not(:first-child) {
+	:not(:first-of-type) {
 		margin-left: 0px;
 	}
 `;
@@ -650,8 +650,6 @@ var MainMenuPanel = ({
     /* @__PURE__ */ jsx12(NavigationLinksStyled, { children: menuLinks.map(({ path }, i) => {
       const currentPath = window.location.pathname;
       const isActive = currentPath === path;
-      console.log("currentPath", currentPath);
-      console.log("####", path);
       return /* @__PURE__ */ jsx12(Fragment10, { children: /* @__PURE__ */ jsx12(Link, { path, isActive }) }, [path, i].join(""));
     }) }),
     /* @__PURE__ */ jsx12(MainMenu, {})

@@ -640,7 +640,7 @@ var LinkStyled = import_styled.default.a`
 	font: "20px Tahoma Bold";
 	text-transform: uppercase;
 	margin: 0 20px;
-	:not(:first-child) {
+	:not(:first-of-type) {
 		margin-left: 0px;
 	}
 `;
@@ -673,8 +673,6 @@ var MainMenuPanel = ({
     /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(NavigationLinksStyled, { children: menuLinks.map(({ path }, i) => {
       const currentPath = window.location.pathname;
       const isActive = currentPath === path;
-      console.log("currentPath", currentPath);
-      console.log("####", path);
       return /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(import_react15.Fragment, { children: /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(Link, { path, isActive }) }, [path, i].join(""));
     }) }),
     /* @__PURE__ */ (0, import_jsx_runtime12.jsx)(MainMenu, {})
