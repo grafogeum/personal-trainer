@@ -27,6 +27,7 @@
     "framer-motion": "^10.12.16",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
+    "reactflow": "^11.7.4",
     "tsup": "^6.7.0"
   }
 }

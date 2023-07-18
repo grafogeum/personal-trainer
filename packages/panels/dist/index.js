@@ -45,6 +45,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var panels_exports = {};
 __export(panels_exports, {
   Column: () => Column,
+  FlowPlanner: () => FlowPlanner,
   Goal: () => Goal,
   MainBoard: () => MainBoard,
   TaskListDnD: () => TaskListDnD
@@ -200,9 +201,96 @@ var MainBoard = ({
     )
   ] }) });
 };
+
+// layouts/FlowPlanner/FlowPlanner.tsx
+var import_react4 = require("react");
+var import_reactflow = __toESM(require("reactflow"));
+var import_style = require("reactflow/dist/style.css");
+
+// layouts/FlowPlanner/DefaultNodes.tsx
+var import_jsx_runtime5 = require("react/jsx-runtime");
+var defaultNodes = [
+  {
+    id: "1",
+    type: "input",
+    data: { label: "Input Node" },
+    position: { x: 250, y: 25 }
+  },
+  {
+    id: "2",
+    // you can also pass a React component as a label
+    data: { label: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)("div", { children: "Default Node" }) },
+    position: { x: 100, y: 125 }
+  },
+  {
+    id: "3",
+    type: "output",
+    data: { label: "Output Node" },
+    position: { x: 250, y: 250 }
+  }
+];
+var DefaultNodes_default = defaultNodes;
+
+// layouts/FlowPlanner/DefaultEdges.ts
+var defaultEdges = [
+  { id: "e1-2", source: "1", target: "2" },
+  { id: "e2-3", source: "2", target: "3", animated: true }
+];
+var DefaultEdges_default = defaultEdges;
+
+// layouts/FlowPlanner/FlowPlanner.tsx
+var import_jsx_runtime6 = require("react/jsx-runtime");
+var initialNodes = [
+  { id: "1", position: { x: 0, y: 0 }, data: { label: "1" } },
+  { id: "2", position: { x: 0, y: 100 }, data: { label: "2" } }
+];
+var initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+var FlowPlanner = () => {
+  const [nodes, setNodes, onNodesChange] = (0, import_reactflow.useNodesState)(initialNodes);
+  const [edges, setEdges, onEdgesChange] = (0, import_reactflow.useEdgesState)(initialEdges);
+  const onConnect = (0, import_react4.useCallback)(
+    (params) => setEdges((eds) => (0, import_reactflow.addEdge)(params, eds)),
+    [setEdges]
+  );
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("div", { style: { width: "100vw", height: "90vh" }, children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(
+    import_reactflow.default,
+    {
+      defaultNodes: DefaultNodes_default,
+      defaultEdges: DefaultEdges_default,
+      fitView: true,
+      onNodesChange,
+      onEdgesChange,
+      onConnect,
+      children: [
+        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_reactflow.Controls, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_reactflow.MiniMap, {}),
+        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+          import_reactflow.Background,
+          {
+            id: "1",
+            gap: 10,
+            color: "#323232",
+            variant: import_reactflow.BackgroundVariant.Lines
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
+          import_reactflow.Background,
+          {
+            id: "2",
+            gap: 100,
+            offset: 1,
+            color: "#f1f1f1",
+            variant: import_reactflow.BackgroundVariant.Lines
+          }
+        )
+      ]
+    }
+  ) });
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   Column,
+  FlowPlanner,
   Goal,
   MainBoard,
   TaskListDnD
